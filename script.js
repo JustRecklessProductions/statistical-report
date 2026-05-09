@@ -5,7 +5,7 @@
  */
 
 // 1. Fetch Logic: REPLACE THIS WITH YOUR NEW PUBLISHED CSV LINK
-const GOOGLE_SHEETS_CSV_URL = "YOUR_NEW_PUBLISHED_CSV_LINK_HERE";
+const GOOGLE_SHEETS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQr6wegUTldLyoaq7qifjk7u3mAW0ixZkpCrSsqu5-WAr53OY-WcGHH1d9grbU7lUCmQ8HElBoh5FRj/pub?output=csv";
 
 document.addEventListener("DOMContentLoaded", async () => {
     try {
