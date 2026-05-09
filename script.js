@@ -1,281 +1,12 @@
-// 1. Fetch Logic: Pointing to your live Google Sheet
+/**
+ * script.js
+ * Asynchronously fetches CSV data from a published Google Sheet,
+ * parses it, and dynamically populates the HTML document based on Unique_IDs.
+ */
+
+// 1. Fetch Logic
 const GOOGLE_SHEETS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQr6wegUTldLyoaq7qifjk7u3mAW0ixZkpCrSsqu5-WAr53OY-WcGHH1d9grbU7lUCmQ8HElBoh5FRj/pub?output=csv";
 
-const colors = ['#244876', '#e96626', '#359fa5', '#b0c4de', '#5bbcc2', '#3a6299', '#1a3355', '#e2e8f0'];
-const kineticIds = ['number_of_individuals_supported', 'number_of_one', 'number_of_two', 'number_of_three', 'number_of_four', 'number_of_new_enrollments_from_outside_tasks'];
-
-// Robust CSV Row Parser (handles commas inside quotes)
-function parseCSVRow(row) {
-    const result = [];
-    let currentWord = '';
-    let insideQuote = false;
-    for (let i = 0; i < row.length; i++) {
-        const char = row[i];
-        if (char === '"') {
-            if (insideQuote && i + 1 < row.length && row[i+1] === '"') {
-                currentWord += '"';
-                i++; // skip escaped quote
-            } else {
-                insideQuote = !insideQuote;
-            }
-        } else if (char === ',' && !insideQuote) {
-            result.push(currentWord);
-            currentWord = '';
-        } else {
-            currentWord += char;
-        }
-    }
-    result.push(currentWord);
-    return result.map(val => val.trim());
-}
-
-// Robust CSV Data Parser (handles multi-line markdown tables inside quoted cells)
-function processCSVData(text, dataStructure) {
-    const rows = [];
-    let currentRow = '';
-    let insideQuote = false;
-    
-    for (let i = 0; i < text.length; i++) {
-        const char = text[i];
-        if (char === '"') {
-            if (i + 1 < text.length && text[i+1] === '"') {
-                currentRow += '""';
-                i++; // skip escaped quote
-            } else {
-                insideQuote = !insideQuote;
-                currentRow += char; // Keep quotes for parseCSVRow
-            }
-        } else if (char === '\n' && !insideQuote) {
-            rows.push(currentRow);
-            currentRow = '';
-        } else if (char === '\r' && !insideQuote) {
-            // skip carriage return
-        } else {
-            currentRow += char;
-        }
-    }
-    if (currentRow) rows.push(currentRow);
-
-    if (rows.length < 2) return;
-
-    for (let i = 1; i < rows.length; i++) {
-        if (!rows[i].trim()) continue;
-        const values = parseCSVRow(rows[i]);
-        
-        // Allow rows to have 3 columns in case Google Sheets omits the trailing comma
-        if (values.length < 3) continue;
-        
-        // Safely map the variables, defaulting the section if it was left blank
-        const id = values[0];
-        const type = values[1];
-        const content = values[2];
-        const section = values[3] || 'default';
-        
-        if (!dataStructure[section]) {
-            dataStructure[section] = [];
-        }
-        dataStructure[section].push({ id, type, content });
-    }
-}
-
-// Markdown to Styled HTML Table
-function parseMarkdownTable(mdText) {
-    const lines = mdText.split('\n').filter(line => line.trim() !== '');
-    if (lines.length < 3) return ''; 
-
-    let tableHtml = '<div class="glossary-table-wrap"><table class="glossary-table">';
-    const headers = lines[0].split('|').map(h => h.trim()).filter(h => h !== '');
-    
-    tableHtml += '<thead><tr>';
-    headers.forEach(h => tableHtml += `<th>${h}</th>`);
-    tableHtml += '</tr></thead><tbody>';
-    
-    for (let i = 2; i < lines.length; i++) {
-        const cells = lines[i].split('|').map(c => c.trim()).filter(c => c !== '');
-        if (cells.length > 0) {
-            tableHtml += '<tr>';
-            cells.forEach(c => tableHtml += `<td>${c}</td>`);
-            tableHtml += '</tr>';
-        }
-    }
-    tableHtml += '</tbody></table></div>';
-    return tableHtml;
-}
-
-// Helper to extract chart data from Markdown
-function parseChartData(mdText) {
-    const lines = mdText.split('\n').filter(line => line.trim() !== '');
-    const labels = [];
-    const data = [];
-    const percentages = [];
-    
-    for (let i = 2; i < lines.length; i++) {
-        const parts = lines[i].split('|').map(p => p.trim()).filter(p => p !== '');
-        if (parts.length >= 3) {
-            labels.push(parts[0]);
-            data.push(parseInt(parts[1].replace(/,/g, ''), 10));
-            percentages.push(parts[2]);
-        }
-    }
-    return { labels, data, percentages };
-}
-
-function populateHTML(data) {
-    for (const section in data) {
-        data[section].forEach(item => {
-            const el = document.getElementById(item.id);
-            if (el) {
-                // Initialize Kinetic Numbers dynamically
-                if (kineticIds.includes(item.id)) {
-                    const text = item.content.trim();
-                    el.setAttribute('data-target-text', text);
-                    const matches = text.match(/^([^0-9]*)([0-9,.]+)([^0-9]*)$/);
-                    if (matches) {
-                        el.setAttribute('data-prefix', matches[1]);
-                        el.setAttribute('data-num', matches[2].replace(/,/g, ''));
-                        el.setAttribute('data-suffix', matches[3]);
-                        el.innerText = `${matches[1]}0${matches[3]}`; 
-                        el.classList.add('kinetic-num');
-                    } else {
-                        el.innerHTML = item.content;
-                    }
-                }
-                else if (item.type === 'a') {
-                    if(item.content.match(/\.(jpeg|jpg|gif|png)$/i)) {
-                        el.innerHTML = `<img src="${item.content}" alt="Logo" style="max-height: 200px; display: block; margin: 0 auto 24px auto;">`;
-                    } else {
-                        el.href = item.content;
-                    }
-                } 
-                // Render Donut Charts
-                else if (item.id === 'gender_all_participants_table' || item.id === 'age_distribution_table' || item.id === 'education_level_table') {
-                    try {
-                        const chartData = parseChartData(item.content);
-                        let legendHtml = '';
-                        chartData.labels.forEach((label, idx) => {
-                            const color = colors[idx % colors.length];
-                            // Sanitize label to prevent stray `<` symbols from breaking the grid
-                            const safeLabel = typeof label === 'string' ? label.replace(/</g, '&lt;').replace(/>/g, '&gt;') : label;
-                            legendHtml += `<div class="legend-item"><div class="legend-dot" style="background:${color};"></div>${safeLabel} — ${chartData.data[idx]} (${chartData.percentages[idx]})</div>`;
-                        });
-                        
-                        el.innerHTML = `
-                            <div class="chart-container" style="width:130px;height:130px;margin:0 auto;">
-                                <canvas id="canvas-${item.id}"></canvas>
-                            </div>
-                            <div class="chart-legend" style="margin-top:16px;">
-                                ${legendHtml}
-                            </div>
-                        `;
-                        
-                        const canvasEl = document.getElementById(`canvas-${item.id}`);
-                        if (canvasEl && typeof Chart !== 'undefined') {
-                            new Chart(canvasEl.getContext('2d'), {
-                                type: 'doughnut',
-                                data: {
-                                    labels: chartData.labels,
-                                    datasets: [{ 
-                                        data: chartData.data, 
-                                        backgroundColor: chartData.labels.map((_, i) => colors[i % colors.length]), 
-                                        borderColor: '#ffffff', 
-                                        borderWidth: 4 
-                                    }]
-                                },
-                                options: { cutout: '62%', responsive: true }
-                            });
-                        }
-                    } catch (error) {
-                        console.error(`Failed to render chart for ${item.id}:`, error);
-                    }
-                }
-                // Render Horizontal Bar Charts
-                else if (item.id === 'race_all_participants_table' || item.id === 'primary_diagnoses_adults_table') {
-                    const chartData = parseChartData(item.content);
-                    let html = '<div style="padding-top:6px;">';
-                    chartData.labels.forEach((label, idx) => {
-                        const color = colors[idx % colors.length];
-                        const width = chartData.percentages[idx] || '0%';
-                        const valueText = `${chartData.data[idx]} (${chartData.percentages[idx]})`;
-                        html += `
-                        <div class="bar-row">
-                            <div class="bar-label">${label}</div>
-                            <div class="bar-track" style="overflow: visible;">
-                                <div class="bar-fill kinetic-bar" data-width="${width}" style="width:0%; background:${color}; position: relative;">
-                                    <span class="bar-value" style="position: absolute; left: 100%; margin-left: 8px; color: var(--navy); top: 50%; transform: translateY(-50%); white-space: nowrap;">${valueText}</span>
-                                </div>
-                            </div>
-                        </div>`;
-                    });
-                    html += '</div>';
-                    el.innerHTML = html;
-                }
-                // Custom UI: Enrollment by County
-                else if (item.id === 'enrollment_by_county_table') {
-                    const lines = item.content.split('\n').filter(l => l.trim().startsWith('|'));
-                    let html = '<div style="padding-top:4px;">';
-                    const dataParts = [];
-                    for (let i = 2; i < lines.length; i++) {
-                        const parts = lines[i].split('|').map(p => p.trim()).filter(p => p !== '');
-                        if (parts.length >= 2) {
-                            dataParts.push({ label: parts[0], value: parseInt(parts[1].replace(/,/g, ''), 10) || 0 });
-                        }
-                    }
-                    const total = dataParts.reduce((sum, d) => sum + d.value, 0) || 1;
-                    
-                    dataParts.forEach((dataItem, idx) => {
-                        const color = colors[idx % colors.length];
-                        const width = ((dataItem.value / total) * 100).toFixed(1) + '%';
-                        html += `
-                        <div class="bar-row">
-                            <div class="bar-label">${dataItem.label}</div>
-                            <div class="bar-track" style="overflow: visible;">
-                                <div class="bar-fill kinetic-bar" data-width="${width}" style="width:0%; background:${color}; position: relative;">
-                                    <span class="bar-value" style="position: absolute; left: 100%; margin-left: 8px; color: var(--navy); top: 50%; transform: translateY(-50%); white-space: nowrap;">${dataItem.value}</span>
-                                </div>
-                            </div>
-                        </div>`;
-                    });
-                    html += '</div>';
-                    el.innerHTML = html;
-                }
-                // Custom UI: Top Programs
-                else if (item.id === 'number_of_enrollments_table') {
-                    const lines = item.content.split('\n').filter(l => l.trim().startsWith('|'));
-                    let html = '';
-                    for (let i = 2; i < lines.length; i++) {
-                        const parts = lines[i].split('|').map(p => p.trim()).filter(p => p !== '');
-                        if (parts.length >= 2) {
-                            html += `<div class="prog-row"><span class="prog-name">${parts[0]}</span><span class="prog-num">${parts[1]}</span></div>`;
-                        }
-                    }
-                    el.innerHTML = html;
-                } 
-                else if (item.type === 'table') {
-                    el.innerHTML = parseMarkdownTable(item.content);
-                } 
-                else {
-                    el.innerHTML = item.content;
-                }
-            }
-        });
-    }
-
-    // Trigger Kinetic animations dynamically post-render
-    setTimeout(() => {
-        document.querySelectorAll('.kinetic-bar').forEach(bar => {
-            bar.style.width = bar.getAttribute('data-width');
-            bar.classList.remove('kinetic-bar');
-        });
-        if (typeof animateNumber === 'function') {
-            document.querySelectorAll('.kinetic-num').forEach(num => {
-                animateNumber(num);
-                num.classList.remove('kinetic-num');
-            });
-        }
-    }, 100);
-}
-
-// Initialization - Fetching from your live Google Sheet
 document.addEventListener("DOMContentLoaded", async () => {
     try {
         const response = await fetch(GOOGLE_SHEETS_CSV_URL);
@@ -284,12 +15,222 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
         
         const csvString = await response.text();
-        const groupedData = {};
-        
-        processCSVData(csvString, groupedData);
-        populateHTML(groupedData);
+        const dataObjects = parseCSV(csvString);
+        populateDOM(dataObjects);
         
     } catch (error) {
         console.error("Error initializing dynamic content:", error);
     }
 });
+
+/**
+ * 2. CSV Parsing Logic
+ */
+function parseCSV(csvText) {
+    const rows = [];
+    let row = [];
+    let currentStr = '';
+    let insideQuotes = false;
+
+    for (let i = 0; i < csvText.length; i++) {
+        const char = csvText[i];
+        const nextChar = csvText[i + 1];
+
+        if (char === '"' && insideQuotes && nextChar === '"') {
+            currentStr += '"'; 
+            i++; 
+        } else if (char === '"') {
+            insideQuotes = !insideQuotes;
+        } else if (char === ',' && !insideQuotes) {
+            row.push(currentStr);
+            currentStr = '';
+        } else if ((char === '\n' || char === '\r') && !insideQuotes) {
+            if (char === '\r' && nextChar === '\n') i++; 
+            row.push(currentStr);
+            if (row.length > 0 || currentStr !== '') rows.push(row);
+            row = [];
+            currentStr = '';
+        } else {
+            currentStr += char;
+        }
+    }
+    
+    if (row.length > 0 || currentStr !== '') {
+        row.push(currentStr);
+        rows.push(row);
+    }
+
+    if (rows.length < 2) return [];
+
+    const headers = rows[0].map(h => h.trim());
+    const dataObjects = [];
+
+    for (let i = 1; i < rows.length; i++) {
+        if (rows[i].length === 1 && rows[i][0].trim() === '') continue; 
+        
+        const obj = {};
+        for (let j = 0; j < headers.length; j++) {
+            obj[headers[j]] = rows[i][j] ? rows[i][j].trim() : '';
+        }
+        dataObjects.push(obj);
+    }
+
+    return dataObjects;
+}
+
+/**
+ * 3. Data-to-DOM Mapping
+ */
+function populateDOM(data) {
+    data.forEach(item => {
+        const { Unique_ID, Element_Type, Content_Body } = item;
+        if (!Unique_ID) return;
+
+        const element = document.getElementById(Unique_ID);
+        if (!element) return; 
+
+        const type = (Element_Type || '').toLowerCase();
+
+        if (['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p'].includes(type)) {
+            const cleanText = Content_Body.replace(/^#+\s/, ''); 
+            element.innerText = cleanText;
+            
+        } else if (type === 'table') {
+            // Check for specific IDs that require Custom UI components instead of standard tables
+            if (Unique_ID === 'enrollment_by_county_table') {
+                element.innerHTML = parseBarChart(Content_Body);
+            } else if (Unique_ID === 'number_of_enrollments_table') {
+                element.innerHTML = parseProgList(Content_Body);
+            } else {
+                element.innerHTML = parseMarkdownTable(Content_Body);
+            }
+            
+        } else if (type === 'ul' || type === 'ol') {
+            element.innerHTML = ''; 
+            const listItems = Content_Body.split('\n').filter(line => line.trim() !== '');
+            
+            listItems.forEach(liText => {
+                const li = document.createElement('li');
+                li.innerText = liText.replace(/^[-*+]\s|^\d+\.\s/, '');
+                element.appendChild(li);
+            });
+        } else if (type === 'a') {
+            if(Content_Body.match(/\.(jpeg|jpg|gif|png)$/i)) {
+                element.innerHTML = `<img src="${Content_Body}" alt="Logo" style="max-width: 250px;">`;
+            } else {
+                element.href = Content_Body;
+            }
+        }
+    });
+}
+
+/**
+ * Custom UI Parser: CSS Horizontal Bar Chart
+ */
+function parseBarChart(mdText) {
+    const rows = mdText.trim().split('\n').filter(r => !r.match(/^[|\s:\-]+$/));
+    if (rows.length < 2) return '';
+    
+    const data = [];
+    let total = 0;
+    
+    // Extract data skipping the header row
+    for (let i = 1; i < rows.length; i++) {
+        let cleanRow = rows[i].trim().replace(/^\||\|$/g, '');
+        const cols = cleanRow.split('|').map(c => c.trim());
+        if (cols.length >= 2) {
+            const label = cols[0];
+            const value = parseFloat(cols[1].replace(/,/g, ''));
+            // Exclude totals row from being graphed
+            if (!isNaN(value) && label.toLowerCase() !== 'total' && !label.toLowerCase().includes('total number')) {
+                data.push({ label, value });
+                total += value;
+            }
+        }
+    }
+    
+    // Sort visually descending
+    data.sort((a, b) => b.value - a.value);
+    const colors = ['var(--orange)', 'var(--teal)', 'var(--orange-light)', 'var(--teal-light)', '#3faae4', 'var(--mid-gray)'];
+    
+    let html = '<div style="padding-top:4px;">\n';
+    data.forEach((item, index) => {
+        const pct = total > 0 ? (item.value / total * 100).toFixed(1) : 0;
+        const color = colors[index % colors.length];
+        html += `
+        <div class="bar-row">
+            <div class="bar-label">${item.label}</div>
+            <div class="bar-track" style="overflow: visible;">
+                <div class="bar-fill" style="width:${pct}%;background:${color}; position: relative;">
+                    <span class="bar-value" style="position: absolute; left: 100%; margin-left: 8px; color: var(--navy); top: 50%; transform: translateY(-50%); white-space: nowrap;">${item.value}</span>
+                </div>
+            </div>
+        </div>\n`;
+    });
+    html += '</div>';
+    return html;
+}
+
+/**
+ * Custom UI Parser: Program Row List
+ */
+function parseProgList(mdText) {
+    const rows = mdText.trim().split('\n').filter(r => !r.match(/^[|\s:\-]+$/));
+    if (rows.length < 2) return '';
+    
+    let html = '';
+    // Process rows skipping the header
+    for (let i = 1; i < rows.length; i++) {
+        let cleanRow = rows[i].trim().replace(/^\||\|$/g, '');
+        const cols = cleanRow.split('|').map(c => c.trim());
+        if (cols.length >= 2) {
+            const label = cols[0];
+            const value = cols[1];
+            // Skip header or total rows just in case
+            if (label.toLowerCase() !== 'total' && !label.toLowerCase().includes('total number')) {
+                html += `<div class="prog-row"><span class="prog-name">${label}</span><span class="prog-num">${value}</span></div>\n`;
+            }
+        }
+    }
+    return html;
+}
+
+/**
+ * Helper Function: Standard Markdown Table Parser
+ */
+function parseMarkdownTable(mdText) {
+    const rows = mdText.trim().split('\n');
+    if (rows.length < 2) return ''; 
+
+    // Draft E's standard Table styling
+    let tableHtml = '<div class="glossary-table-wrap">\n<table class="glossary-table">\n';
+
+    rows.forEach((row, index) => {
+        if (row.trim().match(/^[|\s:\-]+$/)) return;
+
+        let cleanRow = row.trim();
+        if (cleanRow.startsWith('|')) cleanRow = cleanRow.substring(1);
+        if (cleanRow.endsWith('|')) cleanRow = cleanRow.substring(0, cleanRow.length - 1);
+
+        const columns = cleanRow.split('|').map(col => col.trim());
+        let rowHtml = '  <tr>\n';
+
+        columns.forEach(col => {
+            if (index === 0) {
+                rowHtml += `    <th>${col}</th>\n`;
+            } else {
+                rowHtml += `    <td>${col}</td>\n`;
+            }
+        });
+        rowHtml += '  </tr>\n';
+
+        if (index === 0) {
+            tableHtml += '  <thead>\n' + rowHtml + '  </thead>\n  <tbody>\n';
+        } else {
+            tableHtml += rowHtml;
+        }
+    });
+
+    tableHtml += '  </tbody>\n</table>\n</div>';
+    return tableHtml;
+}
