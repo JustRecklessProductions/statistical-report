@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
  :root {
  --navy: #244876;
@@ -88,7 +89,13 @@
  .demo-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
  .outcome-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 20px; }
 
- /* ─── NEW CONNECTIONS CUSTOM UI ─── */
+ /* ─── DONUT CHART & LEGEND UI ─── */
+ .chart-container { position: relative; margin: 0 auto; }
+ .chart-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 12px; justify-content: center; }
+ .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--warm-gray); }
+ .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+ /* ─── NEW CONNECTIONS & BAR CHARTS CUSTOM UI ─── */
  .admit-hero-card { background: linear-gradient(135deg, var(--orange), #d4551b); border-radius: var(--radius); padding: 32px 24px; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: 0 6px 30px rgba(233,102,38,0.25); transition: transform 0.3s ease; }
  .admit-hero-card:hover { transform: translateY(-3px); }
  .admit-hero-num { font-family: 'Montserrat', sans-serif; font-weight: 900; line-height: 1; }
