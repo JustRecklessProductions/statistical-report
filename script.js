@@ -149,36 +149,44 @@ function populateHTML(data) {
                 } 
                 // Render Donut Charts
                 else if (item.id === 'gender_all_participants_table' || item.id === 'age_distribution_table' || item.id === 'education_level_table') {
-                    const chartData = parseChartData(item.content);
-                    let legendHtml = '';
-                    chartData.labels.forEach((label, idx) => {
-                        const color = colors[idx % colors.length];
-                        legendHtml += `<div class="legend-item"><div class="legend-dot" style="background:${color};"></div>${label} — ${chartData.data[idx]} (${chartData.percentages[idx]})</div>`;
-                    });
-                    
-                    el.innerHTML = `
-                        <div class="chart-container" style="width:130px;height:130px;margin:0 auto;">
-                            <canvas id="canvas-${item.id}"></canvas>
-                        </div>
-                        <div class="chart-legend" style="margin-top:16px;">
-                            ${legendHtml}
-                        </div>
-                    `;
-                    
-                    const ctx = document.getElementById(`canvas-${item.id}`).getContext('2d');
-                    new Chart(ctx, {
-                        type: 'doughnut',
-                        data: {
-                            labels: chartData.labels,
-                            datasets: [{ 
-                                data: chartData.data, 
-                                backgroundColor: chartData.labels.map((_, i) => colors[i % colors.length]), 
-                                borderColor: '#ffffff', 
-                                borderWidth: 4 
-                            }]
-                        },
-                        options: { cutout: '62%', responsive: true }
-                    });
+                    try {
+                        const chartData = parseChartData(item.content);
+                        let legendHtml = '';
+                        chartData.labels.forEach((label, idx) => {
+                            const color = colors[idx % colors.length];
+                            // Sanitize label to prevent stray `<` symbols from breaking the grid
+                            const safeLabel = typeof label === 'string' ? label.replace(/</g, '&lt;').replace(/>/g, '&gt;') : label;
+                            legendHtml += `<div class="legend-item"><div class="legend-dot" style="background:${color};"></div>${safeLabel} — ${chartData.data[idx]} (${chartData.percentages[idx]})</div>`;
+                        });
+                        
+                        el.innerHTML = `
+                            <div class="chart-container" style="width:130px;height:130px;margin:0 auto;">
+                                <canvas id="canvas-${item.id}"></canvas>
+                            </div>
+                            <div class="chart-legend" style="margin-top:16px;">
+                                ${legendHtml}
+                            </div>
+                        `;
+                        
+                        const canvasEl = document.getElementById(`canvas-${item.id}`);
+                        if (canvasEl && typeof Chart !== 'undefined') {
+                            new Chart(canvasEl.getContext('2d'), {
+                                type: 'doughnut',
+                                data: {
+                                    labels: chartData.labels,
+                                    datasets: [{ 
+                                        data: chartData.data, 
+                                        backgroundColor: chartData.labels.map((_, i) => colors[i % colors.length]), 
+                                        borderColor: '#ffffff', 
+                                        borderWidth: 4 
+                                    }]
+                                },
+                                options: { cutout: '62%', responsive: true }
+                            });
+                        }
+                    } catch (error) {
+                        console.error(`Failed to render chart for ${item.id}:`, error);
+                    }
                 }
                 // Render Horizontal Bar Charts
                 else if (item.id === 'race_all_participants_table' || item.id === 'primary_diagnoses_adults_table') {
