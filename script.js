@@ -1,4 +1,5 @@
-const scriptURL = 'https://script.google.com/macros/s/AKfycbxkRyBxOd6MwK_4MbEGchK_s0JPevE50-ugX_IrzZzp2G5zlArgSBCFRfbspmrBxwLYxw/exec'; 
+// Your live Google Apps Script API URL
+const scriptURL = 'https://script.google.com/macros/s/AKfycbzw41F0HGgJ5pTnTkiV3l5J6fu8CLO2mEPXPM7BZgxGF27qcKOuoSyvNvX6Fh7FDpzzNg/exec';
 
 document.addEventListener('DOMContentLoaded', () => {
   
@@ -13,9 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // --- 1. Handle Custom Title Row (Row 1 in your Sheet) ---
     const titleRow = dataArray[0];
-    if (titleRow[0]) {
+    if (titleRow && titleRow[0]) {
         const titleElement = document.createElement('h3'); 
-        // Combines "Gender—All Participants" and "N=1150" if the N-value exists
         titleElement.textContent = titleRow[0] + (titleRow[1] ? ` (${titleRow[1]})` : '');
         titleElement.className = 'dynamic-table-title';
         container.appendChild(titleElement);
@@ -32,14 +32,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const headerRow = document.createElement('tr');
     const headers = dataArray[1]; 
     
-    headers.forEach(headerText => {
-        if (headerText === "") return;
-        const th = document.createElement('th');
-        th.textContent = headerText;
-        headerRow.appendChild(th);
-    });
-    thead.appendChild(headerRow);
-    table.appendChild(thead);
+    if (headers) {
+        headers.forEach(headerText => {
+            if (headerText === "") return;
+            const th = document.createElement('th');
+            th.textContent = headerText;
+            headerRow.appendChild(th);
+        });
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
+    }
 
     // --- 3. Build Body (Row 3 and below in your Sheet) ---
     const tbody = document.createElement('tbody');
@@ -73,30 +75,30 @@ document.addEventListener('DOMContentLoaded', () => {
       return response.json();
     })
     .then(data => {
-      // --- Process Text Blocks (Still using marked.js) ---
-      if (data.textBlocks) {
+      // Process Text Blocks (Using marked.js for markdown parsing)
+      if (data.textBlocks && typeof marked !== 'undefined') {
         const tbContainer = document.getElementById('text-blocks-container');
         if(tbContainer) tbContainer.innerHTML = marked.parse(data.textBlocks);
       }
-      if (data.keyOutcomes) {
+      if (data.keyOutcomes && typeof marked !== 'undefined') {
         const koContainer = document.getElementById('key-outcomes-container');
         if(koContainer) koContainer.innerHTML = marked.parse(data.keyOutcomes);
       }
 
-      // --- Process All Tables Dynamically ---
-      // IMPORTANT: The names here (e.g., data.genderTable) must match the JSON keys 
-      // outputted by your Google Apps Script! Add the rest of your tables here as needed.
+      // Process All Tables Dynamically
       buildDynamicTable(data.genderTable, 'gender-table-container');
       buildDynamicTable(data.educationTable, 'education-table-container');
       buildDynamicTable(data.ageDistributionTable, 'age-distribution-table-container');
       buildDynamicTable(data.raceTable, 'race-table-container');
       
-      // Example of how you'll continue adding them based on your HTML container IDs:
-      // buildDynamicTable(data.primaryDiagnosesTable, 'primary-diagnoses-adults-table-container');
-      // buildDynamicTable(data.tutcChemicalUseTable, 'tutc-chemical-use-table-container');
-      // buildDynamicTable(data.tutcPrimaryDiagnosesTable, 'tutc-primary-diagnoses-table-container');
+      // Add additional tables here as you add more tabs to your Google Apps Script
+      // Example: buildDynamicTable(data.lodgeActivityTable, 'lodge-activity-table-container');
     })
     .catch(error => {
       console.error('Error fetching data:', error);
+      const mainContainer = document.querySelector('.section-container');
+      if(mainContainer) {
+          mainContainer.innerHTML += '<p style="color:red;">Error loading data. Please check the console.</p>';
+      }
     });
 });
