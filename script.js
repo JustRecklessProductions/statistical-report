@@ -93,13 +93,11 @@ function populateDOM(data) {
         const element = document.getElementById(Unique_ID);
         
         if (!element) {
-            // Silently skip IDs that aren't in this specific HTML template layout yet
             return; 
         }
 
         const type = (Element_Type || '').toLowerCase();
 
-        // Added h4, h5, h6 to support the new CSV structure
         if (['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p'].includes(type)) {
             const cleanText = Content_Body.replace(/^#+\s/, ''); 
             element.innerText = cleanText;
@@ -117,7 +115,6 @@ function populateDOM(data) {
                 element.appendChild(li);
             });
         } else if (type === 'a') {
-            // Handle links and images specifically (like your new logo header)
             if(Content_Body.match(/\.(jpeg|jpg|gif|png)$/i)) {
                 element.innerHTML = `<img src="${Content_Body}" alt="Logo" style="max-width: 250px;">`;
             } else {
