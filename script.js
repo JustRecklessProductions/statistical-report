@@ -1,181 +1,102 @@
-/**
- * script.js
- * Asynchronously fetches CSV data from a published Google Sheet,
- * parses it, and dynamically populates the HTML document based on Unique_IDs.
- */
+const scriptURL = 'https://script.google.com/macros/s/AKfycbxkRyBxOd6MwK_4MbEGchK_s0JPevE50-ugX_IrzZzp2G5zlArgSBCFRfbspmrBxwLYxw/exec'; 
 
-// 1. Fetch Logic: Placeholder for the Google Sheets CSV "Publish to Web" link
-const GOOGLE_SHEETS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQr6wegUTldLyoaq7qifjk7u3mAW0ixZkpCrSsqu5-WAr53OY-WcGHH1d9grbU7lUCmQ8HElBoh5FRj/pub?output=csv";
-
-document.addEventListener("DOMContentLoaded", async () => {
-    try {
-        const response = await fetch(GOOGLE_SHEETS_CSV_URL);
-        if (!response.ok) {
-            throw new Error(`Failed to fetch data. HTTP Status: ${response.status}`);
-        }
-        
-        const csvString = await response.text();
-        
-        // Parse the CSV string into structured data
-        const dataObjects = parseCSV(csvString);
-        
-        // Map the parsed data onto the DOM elements
-        populateDOM(dataObjects);
-        
-    } catch (error) {
-        console.error("Error initializing dynamic content:", error);
+document.addEventListener('DOMContentLoaded', () => {
+  
+  // THE ENGINE: Builds tables dynamically from your 2D Google Sheets arrays
+  function buildDynamicTable(dataArray, containerId) {
+    const container = document.getElementById(containerId);
+    
+    // Safety check: If the div doesn't exist on the page or data is missing, skip it
+    if (!container || !dataArray || dataArray.length < 2) return;
+    
+    container.innerHTML = ''; 
+    
+    // --- 1. Handle Custom Title Row (Row 1 in your Sheet) ---
+    const titleRow = dataArray[0];
+    if (titleRow[0]) {
+        const titleElement = document.createElement('h3'); 
+        // Combines "Gender—All Participants" and "N=1150" if the N-value exists
+        titleElement.textContent = titleRow[0] + (titleRow[1] ? ` (${titleRow[1]})` : '');
+        titleElement.className = 'dynamic-table-title';
+        container.appendChild(titleElement);
     }
-});
 
-/**
- * 2. CSV Parsing Logic
- * Parses a standard CSV string into an array of objects. 
- * Correctly handles commas and newlines contained within double-quoted strings.
- * * @param {string} csvText - The raw CSV string
- * @returns {Array<Object>} - Array of objects keyed by the CSV header row
- */
-function parseCSV(csvText) {
-    const rows = [];
-    let row = [];
-    let currentStr = '';
-    let insideQuotes = false;
+    const wrapper = document.createElement('div');
+    wrapper.className = 'table-responsive-wrapper';
+    
+    const table = document.createElement('table');
+    table.className = 'sheet-table';
+    
+    // --- 2. Build Headers (Row 2 in your Sheet) ---
+    const thead = document.createElement('thead');
+    const headerRow = document.createElement('tr');
+    const headers = dataArray[1]; 
+    
+    headers.forEach(headerText => {
+        if (headerText === "") return;
+        const th = document.createElement('th');
+        th.textContent = headerText;
+        headerRow.appendChild(th);
+    });
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
 
-    // Character-by-character parsing to safely handle quoted multiline strings
-    for (let i = 0; i < csvText.length; i++) {
-        const char = csvText[i];
-        const nextChar = csvText[i + 1];
+    // --- 3. Build Body (Row 3 and below in your Sheet) ---
+    const tbody = document.createElement('tbody');
+    
+    for (let i = 2; i < dataArray.length; i++) {
+        const rowData = dataArray[i];
+        
+        // Skip entirely empty rows or rows labeled "Total"
+        if (!rowData || rowData[0] === "" || String(rowData[0]).toLowerCase() === "total") continue;
 
-        if (char === '"' && insideQuotes && nextChar === '"') {
-            currentStr += '"'; // Handle escaped quotes ("")
-            i++; 
-        } else if (char === '"') {
-            insideQuotes = !insideQuotes;
-        } else if (char === ',' && !insideQuotes) {
-            row.push(currentStr);
-            currentStr = '';
-        } else if ((char === '\n' || char === '\r') && !insideQuotes) {
-            if (char === '\r' && nextChar === '\n') i++; // Skip \n in \r\n
-            row.push(currentStr);
-            if (row.length > 0 || currentStr !== '') rows.push(row);
-            row = [];
-            currentStr = '';
-        } else {
-            currentStr += char;
+        const row = document.createElement('tr');
+        
+        for (let j = 0; j < headers.length; j++) {
+            if (headers[j] === "") continue; 
+            const td = document.createElement('td');
+            td.textContent = rowData[j] || "";
+            row.appendChild(td);
         }
+        tbody.appendChild(row);
     }
     
-    // Push the very last element and row if the file doesn't end with a newline
-    if (row.length > 0 || currentStr !== '') {
-        row.push(currentStr);
-        rows.push(row);
-    }
+    table.appendChild(tbody);
+    wrapper.appendChild(table);
+    container.appendChild(wrapper);
+  }
 
-    if (rows.length < 2) return [];
+  // DATA FETCH: Call your API and process the JSON
+  fetch(scriptURL)
+    .then(response => {
+      if (!response.ok) throw new Error('Network response was not ok');
+      return response.json();
+    })
+    .then(data => {
+      // --- Process Text Blocks (Still using marked.js) ---
+      if (data.textBlocks) {
+        const tbContainer = document.getElementById('text-blocks-container');
+        if(tbContainer) tbContainer.innerHTML = marked.parse(data.textBlocks);
+      }
+      if (data.keyOutcomes) {
+        const koContainer = document.getElementById('key-outcomes-container');
+        if(koContainer) koContainer.innerHTML = marked.parse(data.keyOutcomes);
+      }
 
-    // Extract headers and trim whitespace
-    const headers = rows[0].map(h => h.trim());
-    const dataObjects = [];
-
-    // Map rows to objects
-    for (let i = 1; i < rows.length; i++) {
-        // Skip empty rows
-        if (rows[i].length === 1 && rows[i][0].trim() === '') continue; 
-        
-        const obj = {};
-        for (let j = 0; j < headers.length; j++) {
-            obj[headers[j]] = rows[i][j] ? rows[i][j].trim() : '';
-        }
-        dataObjects.push(obj);
-    }
-
-    return dataObjects;
-}
-
-/**
- * 3 & 4. Data-to-DOM Mapping and Error Handling
- * Loops through parsed data, finds corresponding DOM elements, and injects content.
- * * @param {Array<Object>} data - Array of row objects from the CSV
- */
-function populateDOM(data) {
-    data.forEach(item => {
-        const { Unique_ID, Element_Type, Content_Body } = item;
-        if (!Unique_ID) return; // Skip if no ID is present
-
-        const element = document.getElementById(Unique_ID);
-        
-        // 4. Error Handling: Log warning if ID doesn't exist and continue
-        if (!element) {
-            console.warn(`Warning: Element with ID '${Unique_ID}' not found in the DOM. Skipping.`);
-            return; 
-        }
-
-        const type = (Element_Type || '').toLowerCase();
-
-        // 3. Conditional Rendering Logic
-        if (['h1', 'h2', 'h3', 'p'].includes(type)) {
-            // Stripping out leading markdown heading hashes (e.g., "## ") for clean insertion
-            const cleanText = Content_Body.replace(/^#+\s/, ''); 
-            element.innerText = cleanText;
-            
-        } else if (type === 'table') {
-            element.innerHTML = parseMarkdownTable(Content_Body);
-            
-        } else if (type === 'ul' || type === 'ol') {
-            element.innerHTML = ''; // Clear fallback content
-            // Split by newline and filter out empty strings
-            const listItems = Content_Body.split('\n').filter(line => line.trim() !== '');
-            
-            listItems.forEach(liText => {
-                const li = document.createElement('li');
-                // Strip potential markdown list characters like "-", "*", or "1. " from the string
-                li.innerText = liText.replace(/^[-*+]\s|^\d+\.\s/, '');
-                element.appendChild(li);
-            });
-        }
+      // --- Process All Tables Dynamically ---
+      // IMPORTANT: The names here (e.g., data.genderTable) must match the JSON keys 
+      // outputted by your Google Apps Script! Add the rest of your tables here as needed.
+      buildDynamicTable(data.genderTable, 'gender-table-container');
+      buildDynamicTable(data.educationTable, 'education-table-container');
+      buildDynamicTable(data.ageDistributionTable, 'age-distribution-table-container');
+      buildDynamicTable(data.raceTable, 'race-table-container');
+      
+      // Example of how you'll continue adding them based on your HTML container IDs:
+      // buildDynamicTable(data.primaryDiagnosesTable, 'primary-diagnoses-adults-table-container');
+      // buildDynamicTable(data.tutcChemicalUseTable, 'tutc-chemical-use-table-container');
+      // buildDynamicTable(data.tutcPrimaryDiagnosesTable, 'tutc-primary-diagnoses-table-container');
+    })
+    .catch(error => {
+      console.error('Error fetching data:', error);
     });
-}
-
-/**
- * Helper Function: Markdown Table Parser
- * Converts markdown-style text tables into a clean HTML <table> structure.
- * * @param {string} mdText - The markdown table string
- * @returns {string} - The resulting HTML table string
- */
-function parseMarkdownTable(mdText) {
-    const rows = mdText.trim().split('\n');
-    if (rows.length < 2) return ''; // Requires at least a header and separator
-
-    let tableHtml = '<table class="dynamic-data-table">\n';
-
-    rows.forEach((row, index) => {
-        // Skip the alignment/separator row entirely (e.g., |:---|:---|)
-        if (row.trim().match(/^[|\s:\-]+$/)) return;
-
-        // Strip the leading and trailing pipes
-        let cleanRow = row.trim();
-        if (cleanRow.startsWith('|')) cleanRow = cleanRow.substring(1);
-        if (cleanRow.endsWith('|')) cleanRow = cleanRow.substring(0, cleanRow.length - 1);
-
-        const columns = cleanRow.split('|').map(col => col.trim());
-        let rowHtml = '  <tr>\n';
-
-        columns.forEach(col => {
-            if (index === 0) {
-                rowHtml += `    <th>${col}</th>\n`;
-            } else {
-                rowHtml += `    <td>${col}</td>\n`;
-            }
-        });
-        rowHtml += '  </tr>\n';
-
-        // Wrap the first row in <thead> and subsequent rows in <tbody>
-        if (index === 0) {
-            tableHtml += '  <thead>\n' + rowHtml + '  </thead>\n  <tbody>\n';
-        } else {
-            tableHtml += rowHtml;
-        }
-    });
-
-    tableHtml += '  </tbody>\n</table>';
-    return tableHtml;
-}
+});
