@@ -4,72 +4,58 @@ const GOOGLE_SHEETS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1v
 const colors = ['#244876', '#e96626', '#359fa5', '#b0c4de', '#5bbcc2', '#3a6299', '#1a3355', '#e2e8f0'];
 const kineticIds = ['number_of_individuals_supported', 'number_of_one', 'number_of_two', 'number_of_three', 'number_of_four', 'number_of_new_enrollments_from_outside_tasks'];
 
-// Robust CSV Row Parser (handles commas inside quotes)
-function parseCSVRow(row) {
-    const result = [];
-    let currentWord = '';
-    let insideQuote = false;
-    for (let i = 0; i < row.length; i++) {
-        const char = row[i];
-        if (char === '"') {
-            if (insideQuote && i + 1 < row.length && row[i+1] === '"') {
-                currentWord += '"';
-                i++; // skip escaped quote
-            } else {
-                insideQuote = !insideQuote;
-            }
-        } else if (char === ',' && !insideQuote) {
-            result.push(currentWord);
-            currentWord = '';
-        } else {
-            currentWord += char;
-        }
-    }
-    result.push(currentWord);
-    return result.map(val => val.trim());
-}
-
-// Robust CSV Data Parser (handles multi-line markdown tables inside quoted cells)
-function processCSVData(text, dataStructure) {
+/**
+ * 2. Original Bulletproof CSV Parser 
+ * (Properly handles newlines inside markdown cells and allows missing columns)
+ */
+function parseCSV(csvText) {
     const rows = [];
-    let currentRow = '';
-    let insideQuote = false;
-    
-    for (let i = 0; i < text.length; i++) {
-        const char = text[i];
-        if (char === '"') {
-            if (i + 1 < text.length && text[i+1] === '"') {
-                currentRow += '""';
-                i++; // skip escaped quote
-            } else {
-                insideQuote = !insideQuote;
-                currentRow += char; // Keep quotes for parseCSVRow
-            }
-        } else if (char === '\n' && !insideQuote) {
-            rows.push(currentRow);
-            currentRow = '';
-        } else if (char === '\r' && !insideQuote) {
-            // skip carriage return
-        } else {
-            currentRow += char;
+    let row = [];
+    let currentStr = '';
+    let insideQuotes = false;
+
+    for (let i = 0; i < csvText.length; i++) {
+        const char = csvText[i];
+        const nextChar = csvText[i + 1];
+
+        if (char === '"' && insideQuotes && nextChar === '"') {
+            currentStr += '"';
+            i++;
+        } else if (char === '"') {
+            insideQuotes = !insideQuotes;
+        } else if (char === ',' && !insideQuotes) {
+            row.push(currentStr);
+            currentStr = '';
+        } else if (char === '\n' && !insideQuotes) {
+            row.push(currentStr);
+            rows.push(row);
+            row = [];
+            currentStr = '';
+        } else if (char !== '\r') {
+            currentStr += char;
         }
     }
-    if (currentRow) rows.push(currentRow);
+    row.push(currentStr);
+    if (row.length > 0) rows.push(row);
 
-    if (rows.length < 2) return;
-
+    const groupedData = {};
     for (let i = 1; i < rows.length; i++) {
-        if (!rows[i].trim()) continue;
-        const values = parseCSVRow(rows[i]);
-        if (values.length < 4) continue;
-        
-        const [id, type, content, section] = values;
-        
-        if (!dataStructure[section]) {
-            dataStructure[section] = [];
+        const r = rows[i];
+        if (r.length < 3) continue; // Only require ID, Type, and Content
+
+        const id = r[0] ? r[0].trim() : '';
+        const type = r[1] ? r[1].trim() : '';
+        const content = r[2] ? r[2].trim() : '';
+        const section = r[3] && r[3].trim() !== '' ? r[3].trim() : 'General'; // Default to General if blank
+
+        if (!id) continue;
+
+        if (!groupedData[section]) {
+            groupedData[section] = [];
         }
-        dataStructure[section].push({ id, type, content });
+        groupedData[section].push({ id, type, content });
     }
+    return groupedData;
 }
 
 // Markdown to Styled HTML Table
@@ -270,9 +256,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
         
         const csvString = await response.text();
-        const groupedData = {};
-        
-        processCSVData(csvString, groupedData);
+        const groupedData = parseCSV(csvString);
         populateHTML(groupedData);
         
     } catch (error) {
