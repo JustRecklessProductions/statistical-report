@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>2025 Statistical Report</title>
     <style>
-        /* Pleasant, modern styling */
         :root {
             --primary-color: #2c3e50;
             --secondary-color: #34495e;
@@ -34,13 +33,11 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
         }
 
-        /* Logo and Header Styling */
         .header-section {
             text-align: center;
             margin-bottom: 40px;
         }
 
-        /* Key Outcomes Grid */
         .outcomes-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -68,13 +65,12 @@
             border-bottom: 1px solid var(--border-color);
         }
 
-        section:last-child {
-            border-bottom: none;
-        }
+        section:last-child { border-bottom: none; }
 
         h1 { color: var(--primary-color); font-size: 2.2rem; border-bottom: 3px solid var(--accent-color); display: inline-block; padding-bottom: 5px; }
-        h2 { color: var(--secondary-color); font-size: 1.6rem; margin-top: 30px; }
-        h3, h4, h5 { color: var(--primary-color); }
+        h2 { color: var(--secondary-color); font-size: 1.8rem; margin-top: 40px; border-bottom: 2px solid var(--border-color); padding-bottom: 5px;}
+        h3 { color: var(--primary-color); font-size: 1.4rem; margin-top: 30px; }
+        h4, h5 { color: var(--primary-color); margin-bottom: 5px; }
         
         .table-wrapper { margin: 20px 0 30px 0; overflow-x: auto; }
 
@@ -149,7 +145,6 @@
 
         <section>
             <h2>Who We Served</h2>
-            
             <h4 id="gender"></h4>
             <ul id="gender_number"></ul>
             <div id="gender_table" class="table-wrapper"></div>
@@ -170,26 +165,226 @@
             <ul id="race_number"></ul>
             <div id="race_table" class="table-wrapper"></div>
         </section>
+        
+        <section>
+            <h4 id="client_satisfaction_header"></h4>
+            <a id="client_satisfaction_data_link" target="_blank" style="color: var(--accent-color); font-weight: bold;">View Client Satisfaction Data</a>
+        </section>
 
         <section>
             <h2 id="general_client_characteristics"></h2>
+            
             <h3 id="all_programs"></h3>
             <p id="in_year_tasks_unlimited_provided_p"></p>
-            
             <div id="genderall_participants_n_number_percent_table" class="table-wrapper"></div>
             <div id="race_all_participants_n_number_percent_table" class="table-wrapper"></div>
             <div id="education_levelall_except_nooc_placement_table" class="table-wrapper"></div>
-            <p id="some_of_the_client_data_p" style="font-style: italic; font-size: 0.85rem;"></p>
-            
+            <p id="some_of_the_client_data_p"></p>
             <div id="age_as_of_all_except_table" class="table-wrapper"></div>
 
             <h3 id="mental_health_program_participants_h2"></h3>
             <div id="primary_diagnosesadults_number_percent_table" class="table-wrapper"></div>
+            <p id="some_of_the_client_data_p_2"></p>
+
+            <h3 id="tutc_tasks_unlimited_training_center2025_h2"></h3>
+            <p id="the_tutc_program_is_a_p"></p>
+            <div id="descriptor_number_of_clients_percent_table" class="table-wrapper"></div>
+            <div id="primary_diagnoses_number_percent_number_table" class="table-wrapper"></div>
+            <div id="gender_number_percent_number_grads_table" class="table-wrapper"></div>
+            <div id="age_on_712025_number_percent_table" class="table-wrapper"></div>
+            <div id="race_number_percent_number_grads_table" class="table-wrapper"></div>
+            <div id="education_level_number_percent_number_table" class="table-wrapper"></div>
+
+            <h3 id="job_training_program2025_h3"></h3>
+            <p id="the_job_training_program_jtp_p"></p>
+            <ul id="one_person_enrolled_in_the_ul"></ul>
+            <div id="primary_diagnoses_number_percent_number_table_2" class="table-wrapper"></div>
+            <div id="gender_number_percent_number_grads_table_2" class="table-wrapper"></div>
+            <div id="age_on_712025_number_percent_table_2" class="table-wrapper"></div>
+            <div id="race_number_percent_number_grads_table_2" class="table-wrapper"></div>
+            <div id="education_level_number_percent_number_table_2" class="table-wrapper"></div>
+
+            <h3 id="lodge_and_job_programs2025_h3"></h3>
+            <p id="the_lodge_and_job_programs_p"></p>
+            <div id="primary_diagnoses_number_lodge_percent_table" class="table-wrapper"></div>
+            <div id="gender_number_lodge_percent_lodge_table" class="table-wrapper"></div>
+            <div id="age_on_712025_number_lodge_table" class="table-wrapper"></div>
+            <div id="race_number_lodge_percent_lodge_table" class="table-wrapper"></div>
+            <div id="education_level_number_lodge_percent_table" class="table-wrapper"></div>
+
+            <h3 id="transition_lodge_program2025_h2"></h3>
+            <p id="the_transition_lodge_tlodge_is_p"></p>
+            <div id="primary_diagnoses_number_percent_number_table_3" class="table-wrapper"></div>
+            <div id="gender_number_percent_number_grads_table_3" class="table-wrapper"></div>
+            <div id="age_on_712025_number_percent_table_3" class="table-wrapper"></div>
+            <div id="race_number_percent_number_grads_table_3" class="table-wrapper"></div>
+            <div id="education_level_number_percent_number_table_3" class="table-wrapper"></div>
+
+            <h3 id="tasks_resource_center_csp_h2"></h3>
+            <p id="the_resource_center_provides_services_p"></p>
+            <div id="primary_diagnoses_number_of_clients_table" class="table-wrapper"></div>
+            <div id="gender_number_percent_table" class="table-wrapper"></div>
+            <div id="age_on_712025_number_percent_table_4" class="table-wrapper"></div>
+            <div id="race_number_percent_table" class="table-wrapper"></div>
+            <div id="education_level_number_percent_table" class="table-wrapper"></div>
         </section>
 
         <section>
-            <h4 id="client_satisfaction_header"></h4>
-            <a id="client_satisfaction_data_link" target="_blank" style="color: var(--accent-color); font-weight: bold;">View Client Satisfaction Data</a>
+            <h2 id="lodge_program_data_h1"></h2>
+            <p id="lodge_program_data_include_participants_p"></p>
+            
+            <h3 id="activity_for_year_h2"></h3>
+            <div id="year_of_admissions_of_discharges_table" class="table-wrapper"></div>
+            <p id="some_participants_were_discharged_and_p"></p>
+            
+            <h3 id="county_of_financial_responsibility_h2"></h3>
+            <div id="county_number_percent_table" class="table-wrapper"></div>
+            
+            <h3 id="retention_h2"></h3>
+            <p id="retention_data_for_lodge_participants_p"></p>
+            <ul id="of_the_69_clients_served_ul"></ul>
+            
+            <h3 id="2025_lodge_discharges_h2"></h3>
+            <p id="discharge_data_there_was_a_p"></p>
+            <div id="months_in_program_number_discharged_table" class="table-wrapper"></div>
+        </section>
+
+        <section>
+            <h2 id="job_program_data_h1"></h2>
+            <p id="participants_in_the_job_program_p"></p>
+            
+            <h3 id="activity_for_year_h2_2"></h3>
+            <div id="year_number_of_admissions_number_table" class="table-wrapper"></div>
+            <p id="some_participants_were_discharged_and_p_2"></p>
+            
+            <h3 id="county_of_financial_responsibility_h2_2"></h3>
+            <div id="county_number_percent_table_2" class="table-wrapper"></div>
+            
+            <h3 id="retention_h2_2"></h3>
+            <ul id="of_the_62_clients_served_ul"></ul>
+            
+            <h3 id="living_arrangement_h2"></h3>
+            <p id="n49_active_on_123125_p"></p>
+            <div id="arrangement_number_percent_table" class="table-wrapper"></div>
+            
+            <h3 id="2025_job_discharges_h2"></h3>
+            <p id="n30_p"></p>
+            <div id="length_of_time_in_program_table" class="table-wrapper"></div>
+        </section>
+
+        <section>
+            <h2 id="program_outcomeslodge_and_job_h1"></h2>
+            <p id="program_output_and_outcome_results_p"></p>
+            <div id="performance_targets_annual_goal_total_table" class="table-wrapper"></div>
+        </section>
+
+        <section>
+            <h2 id="tutc_tasks_unlimited_training_center_h1"></h2>
+            <h3 id="census_h2"></h3>
+            <p id="capacity_9_average_daily_census_p"></p>
+            
+            <h3 id="activity_for_year_h2_3"></h3>
+            <div id="metric_2024_2025_table" class="table-wrapper"></div>
+            
+            <h3 id="2025_discharges_h2"></h3>
+            <p id="n_38_p"></p>
+            <h4 id="status_at_discharge_h3"></h4>
+            <div id="discharged_status_to_lodge_to_table" class="table-wrapper"></div>
+            
+            <h3 id="2025_tutc_outcomes_h2"></h3>
+            <p id="program_output_and_outcome_data_p"></p>
+            <div id="performance_targets_goal_total_2025_table" class="table-wrapper"></div>
+        </section>
+
+        <section>
+            <h2 id="job_training_program_jtp_data_h1"></h2>
+            <h3 id="census_h2_2"></h3>
+            <p id="jtp_was_separated_to_jtp_p"></p>
+            
+            <h3 id="activity_for_year_h2_4"></h3>
+            <ul id="there_a_few_people_admitteddischarged_ul"></ul>
+            <div id="metric_jtp_supported_jtp_personalized_table" class="table-wrapper"></div>
+            
+            <h3 id="2025_discharges_h2_2"></h3>
+            <p id="n_82_graduated_47_at_p"></p>
+            <h3 id="status_at_discharge_h3_2"></h3>
+            <div id="number_of_days_in_jtp_table" class="table-wrapper"></div>
+            <h4 id="median_length_of_stay_in_h3"></h4>
+            <p id="2025_120_p"></p>
+            
+            <h3 id="2024_jtp_outcome_data_h2"></h3>
+            <p id="program_output_and_outcome_data_p_2"></p>
+            <div id="performance_targets_goal_total_2025_table_2" class="table-wrapper"></div>
+        </section>
+
+        <section>
+            <h2 id="transition_lodge_program_data_h1"></h2>
+            <h3 id="census_h2_3"></h3>
+            <p id="capacity_3_average_daily_census_p"></p>
+            
+            <h3 id="activity_for_year_h2_5"></h3>
+            <div id="metric_2024_2025_table_2" class="table-wrapper"></div>
+            
+            <h3 id="2025_discharges_h2_3"></h3>
+            <p id="n_6_p"></p>
+            <h4 id="status_at_discharge_h3_3"></h4>
+            <div id="discharged_status_discharged_to_job_table" class="table-wrapper"></div>
+        </section>
+
+        <section>
+            <h2 id="armhs_program_h1"></h2>
+            <p id="there_were_112_unduplicated_clients_p"></p>
+            <div id="metric_2025_2024_table" class="table-wrapper"></div>
+        </section>
+
+        <section>
+            <h2 id="case_management_program_h1"></h2>
+            <p id="there_were_total_568_unduplicated_p"></p>
+            <div id="metric_2025_2024_table_2" class="table-wrapper"></div>
+            <ul id="some_of_the_client_data_ul"></ul>
+        </section>
+
+        <section>
+            <h2 id="admissions_data_h1"></h2>
+            <p id="there_were_365_new_people_p"></p>
+            <h3 id="2025_enrollment_by_programs_h2"></h3>
+            <div id="program_admitted_table" class="table-wrapper"></div>
+            <h3 id="2025_enrolled_by_county_h2"></h3>
+            <div id="county_enrolled_table" class="table-wrapper"></div>
+        </section>
+
+        <section>
+            <h2 id="extended_employment_program_data_h1"></h2>
+            <h3 id="wage_and_hour_data_h2"></h3>
+            <div id="metric_clients_outside_ee_grand_table" class="table-wrapper"></div>
+            <div id="hours_worked_per_week_tubs_table" class="table-wrapper"></div>
+            <h3 id="posttraining_clients_working_fulltime_on_h2"></h3>
+            <p id="17_fulltime_p"></p>
+        </section>
+
+        <section>
+            <h2 id="placement_program_data_h1"></h2>
+            <p id="tasks_unlimited_job_placement_program_p"></p>
+            <div id="metric_2025_2024_2023_table" class="table-wrapper"></div>
+        </section>
+
+        <section>
+            <h2 id="nooc_h1"></h2>
+            <p id="nooc_is_the_northeast_outreach_p"></p>
+            <div id="client_2025_2024_2023_table" class="table-wrapper"></div>
+        </section>
+
+        <section>
+            <h2 id="hss_housing_stabilization_services"></h2>
+            <p id="housing_stabilization_services_was_a_p"></p>
+            <div id="metric_2025_2024_2023_table_2" class="table-wrapper"></div>
+        </section>
+
+        <section>
+            <h2 id="path_the_projects_for_assistance"></h2>
+            <p id="this_program_supports_the_delivery_p"></p>
+            <div id="metric_table" class="table-wrapper"></div>
+            <p id="there_were_clients_information_p"></p>
         </section>
 
     </div>
