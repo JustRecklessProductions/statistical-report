@@ -82,6 +82,10 @@ function parseCSV(csvText) {
  * 3. Data-to-DOM Mapping
  */
 function populateDOM(data) {
+    // Intercept IDs arrays - configured to catch both exact requested names and existing HTML equivalents
+    const donutChartIds = ['gender_table', 'age_table', 'education_table', 'gender_all_participants_table', 'age_distribution_table', 'education_level_table'];
+    const barChartIds = ['race_table', 'primary_table', 'race_all_participants_table', 'primary_diagnoses_adults_table'];
+
     data.forEach(item => {
         const { Unique_ID, Element_Type, Content_Body } = item;
         if (!Unique_ID) return;
@@ -96,11 +100,15 @@ function populateDOM(data) {
             element.innerText = cleanText;
             
         } else if (type === 'table') {
-            // Check for specific IDs that require Custom UI components instead of standard tables
+            
             if (Unique_ID === 'enrollment_by_county_table') {
                 element.innerHTML = parseBarChart(Content_Body);
             } else if (Unique_ID === 'number_of_enrollments_table') {
                 element.innerHTML = parseProgList(Content_Body);
+            } else if (donutChartIds.includes(Unique_ID)) {
+                renderDonutChart(element, Unique_ID, Content_Body);
+            } else if (barChartIds.includes(Unique_ID)) {
+                element.innerHTML = parseHorizontalBarChart(Content_Body);
             } else {
                 element.innerHTML = parseMarkdownTable(Content_Body);
             }
@@ -125,7 +133,129 @@ function populateDOM(data) {
 }
 
 /**
- * Custom UI Parser: CSS Horizontal Bar Chart
+ * Custom UI Parser: 3-Column Chart Data Extractor
+ */
+function parseChartData(mdText) {
+    const rows = mdText.trim().split('\n').filter(r => !r.match(/^[|\s:\-]+$/));
+    if (rows.length < 2) return [];
+    
+    const data = [];
+    // Skip header row
+    for (let i = 1; i < rows.length; i++) {
+        let cleanRow = rows[i].trim().replace(/^\||\|$/g, '');
+        const cols = cleanRow.split('|').map(c => c.trim());
+        
+        if (cols.length >= 3) {
+            const label = cols[0];
+            const numRaw = cols[1].replace(/[^\d.-]/g, ''); // Strip text/commas
+            const value = parseInt(numRaw, 10);
+            const percent = cols[2];
+            
+            if (!isNaN(value)) {
+                data.push({ label, value, percent });
+            }
+        }
+    }
+    return data;
+}
+
+/**
+ * Custom UI Renderer: Chart.js Donut Charts
+ */
+function renderDonutChart(element, id, mdText) {
+    const chartData = parseChartData(mdText);
+    if (!chartData.length) return;
+
+    const canvasId = `canvas-${id}`;
+    let html = `<div class="chart-container" style="width:130px;height:130px;margin:0 auto;"><canvas id="${canvasId}"></canvas></div>`;
+    html += `<div class="chart-legend" style="margin-top:16px;">`;
+
+    const colors = ['#244876', '#359fa5', '#e96626', '#e2e8f0', '#b0c4de', '#5bbcc2', '#3a6299', '#1a3355'];
+    
+    const labels = [];
+    const dataPoints = [];
+    const bgColors = [];
+
+    chartData.forEach((item, index) => {
+        // Exclude totals/means from chart visualization
+        if (item.label.toLowerCase() === 'total' || item.label.toLowerCase().includes('mean')) return;
+
+        const color = colors[index % colors.length];
+        labels.push(item.label);
+        dataPoints.push(item.value);
+        bgColors.push(color);
+
+        html += `<div class="legend-item"><div class="legend-dot" style="background:${color};"></div>${item.label} — ${item.value} (${item.percent})</div>`;
+    });
+
+    html += `</div>`;
+    element.innerHTML = html;
+
+    // Safely initialize Chart after DOM insertion
+    setTimeout(() => {
+        const ctx = document.getElementById(canvasId);
+        if (ctx) {
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: dataPoints,
+                        backgroundColor: bgColors,
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    cutout: '62%',
+                    responsive: true,
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+    }, 50);
+}
+
+/**
+ * Custom UI Parser: Horizontal CSS Bars (3-Column Variant)
+ */
+function parseHorizontalBarChart(mdText) {
+    const chartData = parseChartData(mdText);
+    if (!chartData.length) return '';
+
+    const colors = ['var(--navy)', 'var(--teal)', 'var(--mid-gray)', 'var(--orange-light)', 'var(--orange)', 'var(--teal-light)', '#7baac4'];
+    let html = '<div style="padding-top:6px;">\n';
+
+    // Filter out generic totals
+    const validData = chartData.filter(item => item.label.toLowerCase() !== 'total' && !item.label.toLowerCase().includes('mean'));
+
+    // Sort descending by numeric value
+    validData.sort((a, b) => b.value - a.value);
+
+    validData.forEach((item, index) => {
+        const color = colors[index % colors.length];
+        
+        // Extract percentage digit to set CSS width limit
+        let pctNum = parseFloat(item.percent.replace(/[^\d.-]/g, ''));
+        if (isNaN(pctNum)) pctNum = 0;
+        let visualWidth = pctNum > 100 ? 100 : pctNum;
+
+        html += `
+        <div class="bar-row">
+            <div class="bar-label">${item.label}</div>
+            <div class="bar-track" style="overflow: visible;">
+                <div class="bar-fill" style="width:${visualWidth}%;background:${color}; position: relative;">
+                    <span class="bar-value" style="position: absolute; left: 100%; margin-left: 8px; color: var(--navy); top: 50%; transform: translateY(-50%); white-space: nowrap;">${item.value} (${item.percent})</span>
+                </div>
+            </div>
+        </div>\n`;
+    });
+    
+    html += '</div>';
+    return html;
+}
+
+/**
+ * Custom UI Parser: CSS Horizontal Bar Chart (2-Column from Phase 1)
  */
 function parseBarChart(mdText) {
     const rows = mdText.trim().split('\n').filter(r => !r.match(/^[|\s:\-]+$/));
@@ -134,14 +264,12 @@ function parseBarChart(mdText) {
     const data = [];
     let total = 0;
     
-    // Extract data skipping the header row
     for (let i = 1; i < rows.length; i++) {
         let cleanRow = rows[i].trim().replace(/^\||\|$/g, '');
         const cols = cleanRow.split('|').map(c => c.trim());
         if (cols.length >= 2) {
             const label = cols[0];
             const value = parseFloat(cols[1].replace(/,/g, ''));
-            // Exclude totals row from being graphed
             if (!isNaN(value) && label.toLowerCase() !== 'total' && !label.toLowerCase().includes('total number')) {
                 data.push({ label, value });
                 total += value;
@@ -149,7 +277,6 @@ function parseBarChart(mdText) {
         }
     }
     
-    // Sort visually descending
     data.sort((a, b) => b.value - a.value);
     const colors = ['var(--orange)', 'var(--teal)', 'var(--orange-light)', 'var(--teal-light)', '#3faae4', 'var(--mid-gray)'];
     
@@ -179,14 +306,12 @@ function parseProgList(mdText) {
     if (rows.length < 2) return '';
     
     let html = '';
-    // Process rows skipping the header
     for (let i = 1; i < rows.length; i++) {
         let cleanRow = rows[i].trim().replace(/^\||\|$/g, '');
         const cols = cleanRow.split('|').map(c => c.trim());
         if (cols.length >= 2) {
             const label = cols[0];
             const value = cols[1];
-            // Skip header or total rows just in case
             if (label.toLowerCase() !== 'total' && !label.toLowerCase().includes('total number')) {
                 html += `<div class="prog-row"><span class="prog-name">${label}</span><span class="prog-num">${value}</span></div>\n`;
             }
@@ -202,7 +327,6 @@ function parseMarkdownTable(mdText) {
     const rows = mdText.trim().split('\n');
     if (rows.length < 2) return ''; 
 
-    // Draft E's standard Table styling
     let tableHtml = '<div class="glossary-table-wrap">\n<table class="glossary-table">\n';
 
     rows.forEach((row, index) => {
