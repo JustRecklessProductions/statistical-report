@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>2025 Statistical Report</title>
+<title>Tasks Unlimited Annual Statistical Report — 2025</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -14,6 +14,7 @@
  --navy-light: #2e5a8f;
  --orange: #e96626;
  --orange-light: #f4955e;
+ --orange-glow: rgba(233,102,38,0.12);
  --teal: #359fa5;
  --teal-light: #5bbcc2;
  --teal-soft: #e8f5f6;
@@ -26,9 +27,8 @@
  --card-shadow: 0 4px 24px rgba(36,72,118,0.07), 0 1.5px 6px rgba(36,72,118,0.04);
  --card-shadow-hover: 0 8px 40px rgba(36,72,118,0.12), 0 2px 10px rgba(36,72,118,0.06);
  --radius: 20px;
- --topnav-height: 56px;
- --sticky-gap: 10px;
- --sticky-offset: calc(var(--topnav-height) + var(--sticky-gap));
+--radius-sm: 14px;
+ --radius-xs: 10px;
  }
  * { margin: 0; padding: 0; box-sizing: border-box; }
  
@@ -42,108 +42,129 @@
  line-height: 1.6;
  -webkit-font-smoothing: antialiased;
  }
- h1, h2, h3, h4, h5 { font-family: 'Montserrat', sans-serif; color: var(--navy); line-height: 1.25; }
- ul { margin-left: 20px; margin-bottom: 15px; }
- p { margin-bottom: 15px; }
-
- /* ─── ANIMATIONS ─── */
- @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
- @keyframes countPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.03); } }
+ h1, h2, h3, h4, h5 {
+ font-family: 'Montserrat', sans-serif;
+ color: var(--navy);
+ line-height: 1.25;
+ }
+ @keyframes fadeInUp {
+ from { opacity: 0; transform: translateY(30px); }
+ to { opacity: 1; transform: translateY(0); }
+ }
+ @keyframes fadeIn {
+ from { opacity: 0; }
+ to { opacity: 1; }
+ }
+@keyframes countPulse {
+ 0%, 100% { transform: scale(1); }
+ 50% { transform: scale(1.03); }
+ }
  .animate-in { opacity: 0; }
  .animate-in.is-visible { animation: fadeInUp 0.7s ease-out both; }
- .delay-1 { animation-delay: 0.1s; } .delay-2 { animation-delay: 0.2s; }
- .delay-3 { animation-delay: 0.3s; } .delay-4 { animation-delay: 0.4s; }
- .delay-5 { animation-delay: 0.5s; } .delay-6 { animation-delay: 0.6s; }
-
- /* ─── LAYOUT ─── */
+ .delay-1 { animation-delay: 0.1s; }
+ .delay-2 { animation-delay: 0.2s; }
+ .delay-3 { animation-delay: 0.3s; }
+ .delay-4 { animation-delay: 0.4s; }
+ .delay-5 { animation-delay: 0.5s; }
+ .delay-6 { animation-delay: 0.6s; }
  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
-
- /* ─── NAV ─── */
- .top-nav { position: sticky; top: 0; z-index: 50; background: rgb(255, 255, 255); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255, 255, 255); }
- .top-nav-inner { max-width: 1100px; margin: 0 auto; padding: 14px 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; }
- .top-nav-brand { font-family: 'Montserrat', sans-serif; font-weight: 800; letter-spacing: 1px; font-size: 12px; color: var(--navy); text-transform: uppercase; opacity: 0.9; }
- .top-nav-links { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
- .top-nav a { text-decoration: none; font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 700; color: var(--navy); padding: 6px 12px; border-radius: 999px; transition: transform 0.2s ease; border: 1px solid transparent; }
- .top-nav a:hover { transform: translateY(-1px); opacity: 0.9; }
-
- /* ─── HERO ─── */
- .hero { background: linear-gradient(135deg, var(--navy) 0%, #1a3a5c 40%, var(--teal) 100%); padding: 56px 24px 48px; text-align: center; position: relative; overflow: hidden; width: 100vw; margin-left: calc(50% - 50vw); border-radius: 0; }
+ .hero {
+ background: linear-gradient(135deg, var(--navy) 0%, #1a3a5c 40%, var(--teal) 100%);
+ padding: 56px 24px 48px;
+ text-align: center;
+ position: relative;
+ overflow: hidden;
+ width: 100vw;
+ margin-left: calc(50% - 50vw);
+ border-radius: 0;
+ }
+ .hero::before {
+ content: ''; position: absolute; top: -60%; right: -20%; width: 500px; height: 500px;
+ background: radial-gradient(circle, rgba(233,102,38,0.15) 0%, transparent 70%); border-radius: 50%;
+ }
+ .hero::after {
+ content: ''; position: absolute; bottom: -40%; left: -10%; width: 400px; height: 400px;
+ background: radial-gradient(circle, rgba(53,159,165,0.2) 0%, transparent 70%); border-radius: 50%;
+ }
  .hero-inner { position: relative; z-index: 1; }
  .hero-logo { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 15px; letter-spacing: 6px; color: rgba(255,255,255,0.7); text-transform: uppercase; margin-bottom: 8px; }
  .hero-subtitle { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 22px; color: var(--white); opacity: 0.92; margin-bottom: 28px; }
  .hero-number { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 96px; color: var(--white); line-height: 1; margin-bottom: 8px; text-shadow: 0 4px 30px rgba(255, 255, 255, 0.4); animation: countPulse 3s ease-in-out infinite; }
  .hero-label { font-family: 'Open Sans', sans-serif; font-weight: 400; font-size: 17px; color: rgba(255,255,255,0.85); max-width: 480px; margin: 0 auto; line-height: 1.5; }
-
- /* ─── SECTIONS & CARDS ─── */
  .section-stripe { width: 100vw; margin-left: calc(50% - 50vw); padding: 40px 0 60px; margin-top: -20px; }
+ @media screen and (max-width: 900px) { .section-stripe { width: auto; margin-left: 0; padding: 20px 0; background: transparent !important; } }
  .section-header { display: flex; align-items: center; gap: 14px; margin: 48px 0 28px; }
+ .section-header .icon-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
  .section-header h2 { font-size: 20px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
- .section-shell { padding: 0 0 22px; }
- 
- .card { background: var(--white); border-radius: var(--radius); box-shadow: var(--card-shadow); padding: 28px; margin-bottom: 20px; transition: box-shadow 0.3s ease, transform 0.3s ease; }
+ .card { background: var(--white); border-radius: var(--radius); box-shadow: var(--card-shadow); padding: 28px; transition: box-shadow 0.3s ease, transform 0.3s ease; }
  .card:hover { box-shadow: var(--card-shadow-hover); transform: translateY(-3px); }
- .card-title { font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.8px; border-bottom: 2px solid var(--softest-gray); padding-bottom: 8px; }
+ .card-title { font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.8px; }
  .card-note { font-size: 12px; color: var(--mid-gray); margin-bottom: 16px; }
-
  .demo-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
  .demo-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
  .outcome-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 20px; }
-
- /* ─── DONUT CHART & LEGEND UI ─── */
  .chart-container { position: relative; margin: 0 auto; }
  .chart-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 12px; justify-content: center; }
  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--warm-gray); }
  .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-
- /* ─── NEW CONNECTIONS & BAR CHARTS CUSTOM UI ─── */
- .admit-hero-card { background: linear-gradient(135deg, var(--orange), #d4551b); border-radius: var(--radius); padding: 32px 24px; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: 0 6px 30px rgba(233,102,38,0.25); transition: transform 0.3s ease; }
- .admit-hero-card:hover { transform: translateY(-3px); }
- .admit-hero-num { font-family: 'Montserrat', sans-serif; font-weight: 900; line-height: 1; }
- .admit-hero-label { font-size: 14px; color: rgba(255,255,255,0.9); margin-top: 8px; line-height: 1.5; font-weight: bold; }
-
  .bar-row { display: flex; align-items: center; margin-bottom: 10px; }
  .bar-label { width: 150px; font-size: 12.5px; color: var(--navy); flex-shrink: 0; text-align: right; padding-right: 14px; font-weight: 500; }
  .bar-track { flex: 1; height: 22px; background: var(--navy); border-radius: 12px; overflow: hidden; position: relative; }
- .bar-fill { height: 100%; border-radius: 12px; display: flex; align-items: center; }
- .bar-value { font-size: 12px; font-weight: 700; font-family: 'Montserrat', sans-serif; }
-
- .prog-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--softest-gray); }
+ .bar-fill { height: 100%; border-radius: 12px; transition: width 1.2s cubic-bezier(0.22, 0.61, 0.36, 1); display: flex; align-items: center; justify-content: flex-end; padding-right: 10px; }
+ .bar-value { font-size: 11px; font-weight: 700; font-family: 'Montserrat', sans-serif; color: var(--white); white-space: nowrap; }
+ .admit-hero-card { background: linear-gradient(135deg, var(--orange), #d4551b); border-radius: var(--radius); padding: 32px 24px; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: 0 6px 30px rgba(233,102,38,0.25); transition: transform 0.3s ease; }
+ .admit-hero-card:hover { transform: translateY(-3px); }
+ .admit-hero-num { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 64px; color: var(--white); line-height: 1; }
+ .admit-hero-label { font-size: 14px; color: rgba(255,255,255,0.9); margin-top: 8px; line-height: 1.5; }
+ .prog-row { display: flex; justify-content: space-between; align-items: center; padding: 2px 0; border-bottom: 1px solid var(--softest-gray); }
  .prog-row:last-child { border-bottom: none; }
  .prog-name { font-size: 13px; color: var(--warm-gray); }
- .prog-num { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 14px; color: var(--navy); background: var(--softest-gray); border-radius: 8px; padding: 3px 12px; }
-
- /* ─── OUTCOME CARDS ─── */
+ .prog-num { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 14px; color: var(--navy); background: var(--white); border-radius: 8px; padding: 3px 12px; }
  .outcome-card { border-radius: var(--radius); padding: 28px 20px; text-align: center; transition: transform 0.3s ease, box-shadow 0.3s ease; position: relative; overflow: hidden; }
  .outcome-card:hover { transform: translateY(-4px); }
+ .outcome-card::before { content: ''; position: absolute; top: -30px; right: -30px; width: 80px; height: 80px; background: rgba(255,255,255,0.12); border-radius: 50%; }
  .outcome-num { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 36px; color: var(--white); line-height: 1.1; position: relative; }
  .outcome-label { font-size: 12.5px; color: rgba(255,255,255,0.9); margin-top: 8px; line-height: 1.45; position: relative; }
-
- /* ─── TABLES ─── */
- .glossary-table-wrap { background: var(--white); border-radius: var(--radius-sm); border: 1px solid var(--border-color); overflow-x: auto; margin-top: 10px; }
- table.glossary-table { width: 100%; border-collapse: collapse; font-size: 12.5px; color: var(--warm-gray); }
- table.glossary-table thead th { font-family: 'Montserrat', sans-serif; font-size: 12px; text-transform: uppercase; color: var(--navy); background: var(--softest-gray); border-bottom: 2px solid var(--light-gray); padding: 12px; text-align: left; }
- table.glossary-table tbody td { border-bottom: 1px solid var(--light-gray); padding: 10px 12px; }
- table.glossary-table tbody tr:nth-child(even) td { background: var(--cream); }
-
- /* ─── PRINT MEDIA QUERY ─── */
+ .footer { text-align: center; padding: 36px 24px 32px; color: var(--mid-gray); font-size: 13px; font-style: italic; line-height: 1.6; }
+ .footer strong { color: var(--navy); font-style: normal; }
+ @media (max-width: 900px) { .demo-grid, .admit-grid, .demo-grid-2 { grid-template-columns: 1fr; } .outcome-grid { grid-template-columns: 1fr 1fr; } .hero-number { font-size: 64px; } }
+ @media (max-width: 600px) { .outcome-grid { grid-template-columns: 1fr; } .hero-number { font-size: 52px; } .hero-subtitle { font-size: 18px; } .bar-label { width: 110px; font-size: 11px; } }
+ @page { size: letter; margin: 0.5in; }
  @media print {
  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
  body { background: #ffffff !important; }
- .top-nav { display: none !important; }
+ .animate-in { animation: none !important; opacity: 1 !important; transform: none !important; }
+ .card:hover, .admit-hero-card:hover, .outcome-card:hover { transform: none !important; box-shadow: none !important; }
  .container { max-width: none; margin: 0; padding: 0; }
  .hero { padding: 32px 24px; width: 100% !important; margin: 0 0 24px 0 !important; border-radius: 24px !important; }
- .section-stripe { border-radius: 24px !important; padding: 17px 16px !important; margin-bottom: 24px !important; width: auto !important; margin-left: 0 !important; }
+ .hero-inner img { max-height: 80px !important; margin-bottom: 12px !important; padding: 12px 24px !important; border-radius: 16px !important; }
+ .section-header { margin: 24px 0 14px; }
+ .card { padding: 16px; box-shadow: none; border: 1px solid rgba(226,232,240,0.9); }
+ .section-stripe { border-radius: 24px !important; padding: 17px 16px 17px !important; margin-bottom: 24px !important; width: auto !important; margin-left: 0 !important; }
+ .section-stripe .card, .section-stripe .admit-hero-card, .section-stripe .outcome-card { border: none !important; }
+ .print-gradient-border { padding-top: 24px !important; padding-bottom: 24px !important; }
  .card, .admit-hero-card, .outcome-card { break-inside: avoid; page-break-inside: avoid; }
+ .section-header { break-after: avoid; page-break-after: avoid; }
+ .page-break { break-before: page; page-break-before: always; }
+ .demo-grid { grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+ .demo-grid-2 { grid-template-columns: 1fr 1fr; gap: 8px; }
  .outcome-grid { grid-template-columns: repeat(4, 1fr); gap: 6px; }
+ .top-nav { display: none !important; }
  }
-
- @media (max-width: 900px) {
- .demo-grid, .demo-grid-2 { grid-template-columns: 1fr; }
- .outcome-grid { grid-template-columns: 1fr 1fr; }
- .hero-number { font-size: 64px; }
- .section-stripe { width: auto; margin-left: 0; padding: 20px 0; background: transparent !important; }
- }
- @media (max-width: 600px) { .outcome-grid { grid-template-columns: 1fr; } }
+ .top-nav { position: sticky; top: 0; z-index: 50; background: rgb(255, 255, 255); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255, 255, 255); }
+ .top-nav-inner { max-width: 1100px; margin: 0 auto; padding: 14px 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; }
+ .top-nav-brand { font-family: 'Montserrat', sans-serif; font-weight: 800; letter-spacing: 1px; font-size: 12px; color: var(--navy); text-transform: uppercase; opacity: 0.9; white-space: nowrap; }
+ .top-nav-links { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+ .top-nav a { text-decoration: none; font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 700; color: var(--navy); background: rgba(36,72,118,0.06); border: 1px solid rgba(36,72,118,0.10); padding: 6px 12px; border-radius: 999px; transition: transform 0.2s ease, background 0.2s ease; }
+ .top-nav a:hover { transform: translateY(-1px); background: rgba(36,72,118,0.10); }
+ .section-shell { padding: 0 0 22px; }
+ .section-shell .container { padding-top: 8px; }
+ .glossary-table-wrap{ background: var(--white); border-radius: var(--radius); box-shadow: var(--card-shadow); padding: 22px; border: 1px solid rgba(255,255,255); }
+ table.glossary-table{ width: 100%; border-collapse: collapse; font-size: 12.5px; color: var(--warm-gray); }
+ table.glossary-table thead th{ font-family: 'Montserrat', sans-serif; font-size: 12px; text-transform: uppercase; letter-spacing: 0.7px; color: var(--navy); background: var(--softest-gray); border-bottom: 1px solid rgb(0, 0, 0); padding: 10px 10px; text-align: left; vertical-align: bottom; }
+ table.glossary-table tbody td{ border-bottom: 1px solid rgb(0, 0, 0); padding: 9px 10px; vertical-align: top; }
+ table.glossary-table tbody tr:nth-child(even) td{ background: rgba(255,255,255); }
+ .glossary-note{ font-size: 12px; color: var(--mid-gray); margin-top: 10px; line-height: 1.55; }
 </style>
 </head>
 <body>
@@ -161,18 +182,18 @@
 
 <div id="at-a-glance"></div>
 
-<div class="container" style="background-color: var(--white); padding: 48px 24px 32px; text-align: center;">
-    <div id="logo_header" style="margin-bottom: 24px;"></div>
-    <h1 id="report_title" style="font-size: 36px; background: linear-gradient(135deg, var(--navy) 0%, #1a3a5c 40%, var(--teal) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: inline-block; margin: 0;">Loading Report...</h1>
+<div class="print-hero-container" style="background-color: var(--white); padding: 48px 24px 32px; text-align: center;">
+ <div id="logo_header"></div>
+ <h2 id="report_title" style="font-size: 36px; font-weight: 800; letter-spacing: 1px; margin: 0; background: linear-gradient(135deg, var(--navy) 0%, #1a3a5c 40%, var(--teal) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: inline-block;"></h2>
 </div>
 
 <section class="hero">
-    <div class="hero-inner animate-in">
-        <div id="tagline" class="hero-logo"></div>
-        <div id="we_have_supported" class="hero-subtitle"></div>
-        <div id="number_of_individuals_supported" class="hero-number"></div>
-        <div id="on_their_growth" class="hero-label"></div>
-    </div>
+ <div class="hero-inner animate-in">
+ <div class="hero-logo" id="tagline"></div>
+ <div class="hero-subtitle" id="we_have_supported"></div>
+ <div class="hero-number" id="number_of_individuals_supported"></div>
+ <div class="hero-label" id="on_their_growth"></div>
+ </div>
 </section>
 
 <div class="container">
@@ -180,25 +201,24 @@
         <h2 style="margin: 0; background: linear-gradient(135deg, var(--navy) 0%, #1a3a5c 40%, var(--teal) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Key Outcomes</h2>
     </div>
 </div>
-
-<div class="section-stripe" style="background: var(--white); padding-top: 40px; padding-bottom: 60px;">
+<div class="section-stripe print-gradient-border" style="background: var(--white); padding-top: 40px; padding-bottom: 60px;">
     <div class="container">
         <div class="outcome-grid" style="margin-top: 0;">
             <div class="outcome-card animate-in delay-3" style="background:linear-gradient(135deg,var(--teal),#2a8a8f);box-shadow:0 6px 28px rgba(53,159,165,0.3);">
-                <div id="number_of_one" class="outcome-num"></div>
-                <div id="key_outcome_1" class="outcome-label"></div>
-            </div>
-            <div class="outcome-card animate-in delay-4" style="background:linear-gradient(135deg,var(--navy),#1c3a60);box-shadow:0 6px 28px rgba(36,72,118,0.3);">
                 <div id="number_of_two" class="outcome-num"></div>
                 <div id="key_outcome_2" class="outcome-label"></div>
             </div>
-            <div class="outcome-card animate-in delay-5" style="background:linear-gradient(135deg,var(--orange),#d05520);box-shadow:0 6px 28px rgba(233,102,38,0.3);">
+            <div class="outcome-card animate-in delay-4" style="background:linear-gradient(135deg,var(--navy),#1c3a60);box-shadow:0 6px 28px rgba(36,72,118,0.3);">
                 <div id="number_of_three" class="outcome-num"></div>
                 <div id="key_outcome_3" class="outcome-label"></div>
             </div>
-            <div class="outcome-card animate-in delay-6" style="background:linear-gradient(135deg,var(--teal),var(--navy));box-shadow:0 6px 28px rgba(53,159,165,0.25);">
+            <div class="outcome-card animate-in delay-5" style="background:linear-gradient(135deg,var(--orange),#d05520);box-shadow:0 6px 28px rgba(233,102,38,0.3);">
                 <div id="number_of_four" class="outcome-num"></div>
                 <div id="key_outcome_4" class="outcome-label"></div>
+            </div>
+            <div class="outcome-card animate-in delay-6" style="background:linear-gradient(135deg,var(--teal),var(--navy));box-shadow:0 6px 28px rgba(53,159,165,0.25);">
+                <div id="number_of_one" class="outcome-num"></div>
+                <div id="key_outcome_1" class="outcome-label"></div>
             </div>
         </div>
     </div>
@@ -206,10 +226,9 @@
 
 <div class="container">
     <div class="section-header animate-in delay-2" style="justify-content: center; margin-bottom: 24px; margin-top: 24px;">
-        <h2 id="new_connections_header" style="color: var(--navy); margin: 0;"></h2>
+        <h2 style="color: var(--navy); margin: 0;">New Connections</h2>
     </div>
 </div>
-
 <div class="section-stripe" style="background: var(--navy);">
     <div class="container">
         <div class="demo-grid-2" style="margin-top: 0;">
@@ -220,293 +239,141 @@
                     <div id="new_enrollments_text_2" style="margin-top:12px; font-size: 18px; color: var(--teal); opacity: 0.8;"></div>
                 </div>
                 <div class="card animate-in delay-4">
-                    <div id="enrollment_by_county_header" class="card-title"></div>
-                    <div id="number_of_enrollments_by_county" class="card-note"></div>
+                    <div class="card-title" id="enrollment_by_county_header"></div>
+                    <div class="card-note" id="number_of_enrollments_by_county"></div>
                     <div id="enrollment_by_county_table"></div>
                 </div>
             </div>
             <div class="card animate-in delay-5">
-                <div id="top_programs_enrolled_header" class="card-title"></div>
-                <div id="number_of_enrollments" class="card-note"></div>
+                <div class="card-title" id="top_programs_enrolled_header"></div>
+                <div class="card-note" id="number_of_enrollments"></div>
                 <div id="number_of_enrollments_table"></div>
             </div>
         </div>
-    </div>
-</div>
+    </div> 
+</div> 
 
 <div class="container">
     <div class="section-header animate-in delay-1" style="justify-content: center; margin-bottom: 24px; margin-top: 24px;">
         <h2 style="color: var(--teal); margin: 0;">Who We Served</h2>
     </div>
 </div>
-
 <div class="section-stripe" style="background: var(--teal);">
     <div class="container">
         <div class="demo-grid">
             <div class="card animate-in delay-2">
-                <div id="gender" class="card-title"></div>
-                <ul id="gender_number" class="card-note"></ul>
-                <div id="gender_table"></div>
+                <div class="card-title">Gender</div>
+                <div id="gender_all_participants_table"></div>
             </div>
             <div class="card animate-in delay-3">
-                <div id="age" class="card-title"></div>
-                <ul id="age_info" class="card-note"></ul>
-                <div id="age_table"></div>
+                <div class="card-title">Age Distribution</div>
+                <div id="age_distribution_table"></div>
             </div>
             <div class="card animate-in delay-4">
-                <div id="education" class="card-title"></div>
-                <ul id="education_number" class="card-note"></ul>
-                <div id="education_table"></div>
+                <div class="card-title">Education Level</div>
+                <div id="education_level_table"></div>
             </div>
         </div>
         <div class="demo-grid-2">
             <div class="card animate-in delay-4">
-                <div id="primary" class="card-title"></div>
-                <ul id="primary_info" class="card-note"></ul>
-                <div id="primary_table"></div>
+                <div class="card-title">Race & Ethnicity</div>
+                <div id="race_all_participants_table"></div>
             </div>
             <div class="card animate-in delay-5">
-                <div id="race" class="card-title"></div>
-                <ul id="race_number" class="card-note"></ul>
-                <div id="race_table"></div>
+                <div class="card-title">Primary Diagnoses</div>
+                <div id="primary_diagnoses_adults_table"></div>
             </div>
-        </div>
-    </div>
-</div>
-
-<div class="container">
-    <div class="section-header animate-in delay-2" style="justify-content: center; margin-bottom: 24px; margin-top: 24px;">
-        <h2 style="color: var(--orange); margin: 0;">Client Satisfaction</h2>
-    </div>
-</div>
-<div class="section-stripe" style="background: var(--orange);">
-    <div class="container">
-        <div class="card animate-in delay-3" style="text-align: center;">
-            <div id="client_satisfaction_header" class="card-title" style="margin-bottom: 15px; border: none;"></div>
-            <a id="client_satisfaction_data_link" target="_blank" style="display: inline-block; padding: 12px 24px; background: var(--orange); color: var(--white); font-weight: bold; text-decoration: none; border-radius: 8px;">View Client Satisfaction Data</a>
         </div>
     </div>
 </div>
 
 <section id="service-data" class="section-shell">
-    <div class="container">
-        </div>
-</section>
+  </section>
 
 <section id="glossary" class="section-shell">
-    <div class="container">
-        
-        <div class="card">
-            <h2 id="general_client_characteristics"></h2>
-            <h3 id="all_programs"></h3>
-            <p id="in_year_tasks_unlimited_provided_p"></p>
-            <div id="genderall_participants_n_number_percent_table"></div>
-            <div id="race_all_participants_n_number_percent_table"></div>
-            <div id="education_levelall_except_nooc_placement_table"></div>
-            <p id="some_of_the_client_data_p"></p>
-            <div id="age_as_of_all_except_table"></div>
-            
-            <h3 id="mental_health_program_participants_h2"></h3>
-            <div id="primary_diagnosesadults_number_percent_table"></div>
-            <p id="some_of_the_client_data_p_2"></p>
-        </div>
-
-        <div class="card">
-            <h3 id="tutc_tasks_unlimited_training_center2025_h2"></h3>
-            <p id="the_tutc_program_is_a_p"></p>
-            <div id="descriptor_number_of_clients_percent_table"></div>
-            <div id="primary_diagnoses_number_percent_number_table"></div>
-            <div id="gender_number_percent_number_grads_table"></div>
-            <div id="age_on_712025_number_percent_table"></div>
-            <div id="race_number_percent_number_grads_table"></div>
-            <div id="education_level_number_percent_number_table"></div>
-        </div>
-
-        <div class="card">
-            <h3 id="job_training_program2025_h3"></h3>
-            <p id="the_job_training_program_jtp_p"></p>
-            <ul id="one_person_enrolled_in_the_ul"></ul>
-            <div id="primary_diagnoses_number_percent_number_table_2"></div>
-            <div id="gender_number_percent_number_grads_table_2"></div>
-            <div id="age_on_712025_number_percent_table_2"></div>
-            <div id="race_number_percent_number_grads_table_2"></div>
-            <div id="education_level_number_percent_number_table_2"></div>
-        </div>
-
-        <div class="card">
-            <h3 id="lodge_and_job_programs2025_h3"></h3>
-            <p id="the_lodge_and_job_programs_p"></p>
-            <div id="primary_diagnoses_number_lodge_percent_table"></div>
-            <div id="gender_number_lodge_percent_lodge_table"></div>
-            <div id="age_on_712025_number_lodge_table"></div>
-            <div id="race_number_lodge_percent_lodge_table"></div>
-            <div id="education_level_number_lodge_percent_table"></div>
-        </div>
-
-        <div class="card">
-            <h3 id="transition_lodge_program2025_h2"></h3>
-            <p id="the_transition_lodge_tlodge_is_p"></p>
-            <div id="primary_diagnoses_number_percent_number_table_3"></div>
-            <div id="gender_number_percent_number_grads_table_3"></div>
-            <div id="age_on_712025_number_percent_table_3"></div>
-            <div id="race_number_percent_number_grads_table_3"></div>
-            <div id="education_level_number_percent_number_table_3"></div>
-        </div>
-
-        <div class="card">
-            <h3 id="tasks_resource_center_csp_h2"></h3>
-            <p id="the_resource_center_provides_services_p"></p>
-            <div id="primary_diagnoses_number_of_clients_table"></div>
-            <div id="gender_number_percent_table"></div>
-            <div id="age_on_712025_number_percent_table_4"></div>
-            <div id="race_number_percent_table"></div>
-            <div id="education_level_number_percent_table"></div>
-        </div>
-
-        <div class="card">
-            <h2 id="lodge_program_data_h1"></h2>
-            <p id="lodge_program_data_include_participants_p"></p>
-            <h3 id="activity_for_year_h2"></h3>
-            <div id="year_of_admissions_of_discharges_table"></div>
-            <p id="some_participants_were_discharged_and_p"></p>
-            <h3 id="county_of_financial_responsibility_h2"></h3>
-            <div id="county_number_percent_table"></div>
-            <h3 id="retention_h2"></h3>
-            <p id="retention_data_for_lodge_participants_p"></p>
-            <ul id="of_the_69_clients_served_ul"></ul>
-            <h3 id="2025_lodge_discharges_h2"></h3>
-            <p id="discharge_data_there_was_a_p"></p>
-            <div id="months_in_program_number_discharged_table"></div>
-        </div>
-
-        <div class="card">
-            <h2 id="job_program_data_h1"></h2>
-            <p id="participants_in_the_job_program_p"></p>
-            <h3 id="activity_for_year_h2_2"></h3>
-            <div id="year_number_of_admissions_number_table"></div>
-            <p id="some_participants_were_discharged_and_p_2"></p>
-            <h3 id="county_of_financial_responsibility_h2_2"></h3>
-            <div id="county_number_percent_table_2"></div>
-            <h3 id="retention_h2_2"></h3>
-            <ul id="of_the_62_clients_served_ul"></ul>
-            <h3 id="living_arrangement_h2"></h3>
-            <p id="n49_active_on_123125_p"></p>
-            <div id="arrangement_number_percent_table"></div>
-            <h3 id="2025_job_discharges_h2"></h3>
-            <p id="n30_p"></p>
-            <div id="length_of_time_in_program_table"></div>
-        </div>
-
-        <div class="card">
-            <h2 id="program_outcomeslodge_and_job_h1"></h2>
-            <p id="program_output_and_outcome_results_p"></p>
-            <div id="performance_targets_annual_goal_total_table"></div>
-        </div>
-
-        <div class="card">
-            <h2 id="tutc_tasks_unlimited_training_center_h1"></h2>
-            <h3 id="census_h2"></h3>
-            <p id="capacity_9_average_daily_census_p"></p>
-            <h3 id="activity_for_year_h2_3"></h3>
-            <div id="metric_2024_2025_table"></div>
-            <h3 id="2025_discharges_h2"></h3>
-            <p id="n_38_p"></p>
-            <h4 id="status_at_discharge_h3"></h4>
-            <div id="discharged_status_to_lodge_to_table"></div>
-            <h3 id="2025_tutc_outcomes_h2"></h3>
-            <p id="program_output_and_outcome_data_p"></p>
-            <div id="performance_targets_goal_total_2025_table"></div>
-        </div>
-
-        <div class="card">
-            <h2 id="job_training_program_jtp_data_h1"></h2>
-            <h3 id="census_h2_2"></h3>
-            <p id="jtp_was_separated_to_jtp_p"></p>
-            <h3 id="activity_for_year_h2_4"></h3>
-            <ul id="there_a_few_people_admitteddischarged_ul"></ul>
-            <div id="metric_jtp_supported_jtp_personalized_table"></div>
-            <h3 id="2025_discharges_h2_2"></h3>
-            <p id="n_82_graduated_47_at_p"></p>
-            <h3 id="status_at_discharge_h3_2"></h3>
-            <div id="number_of_days_in_jtp_table"></div>
-            <h4 id="median_length_of_stay_in_h3"></h4>
-            <p id="2025_120_p"></p>
-            <h3 id="2024_jtp_outcome_data_h2"></h3>
-            <p id="program_output_and_outcome_data_p_2"></p>
-            <div id="performance_targets_goal_total_2025_table_2"></div>
-        </div>
-
-        <div class="card">
-            <h2 id="transition_lodge_program_data_h1"></h2>
-            <h3 id="census_h2_3"></h3>
-            <p id="capacity_3_average_daily_census_p"></p>
-            <h3 id="activity_for_year_h2_5"></h3>
-            <div id="metric_2024_2025_table_2"></div>
-            <h3 id="2025_discharges_h2_3"></h3>
-            <p id="n_6_p"></p>
-            <h4 id="status_at_discharge_h3_3"></h4>
-            <div id="discharged_status_discharged_to_job_table"></div>
-        </div>
-
-        <div class="card">
-            <h2 id="armhs_program_h1"></h2>
-            <p id="there_were_112_unduplicated_clients_p"></p>
-            <div id="metric_2025_2024_table"></div>
-        </div>
-
-        <div class="card">
-            <h2 id="case_management_program_h1"></h2>
-            <p id="there_were_total_568_unduplicated_p"></p>
-            <div id="metric_2025_2024_table_2"></div>
-            <ul id="some_of_the_client_data_ul"></ul>
-        </div>
-
-        <div class="card">
-            <h2 id="admissions_data_h1"></h2>
-            <p id="there_were_365_new_people_p"></p>
-            <h3 id="2025_enrollment_by_programs_h2"></h3>
-            <div id="program_admitted_table"></div>
-            <h3 id="2025_enrolled_by_county_h2"></h3>
-            <div id="county_enrolled_table"></div>
-        </div>
-
-        <div class="card">
-            <h2 id="extended_employment_program_data_h1"></h2>
-            <h3 id="wage_and_hour_data_h2"></h3>
-            <div id="metric_clients_outside_ee_grand_table"></div>
-            <div id="hours_worked_per_week_tubs_table"></div>
-            <h3 id="posttraining_clients_working_fulltime_on_h2"></h3>
-            <p id="17_fulltime_p"></p>
-        </div>
-
-        <div class="card">
-            <h2 id="placement_program_data_h1"></h2>
-            <p id="tasks_unlimited_job_placement_program_p"></p>
-            <div id="metric_2025_2024_2023_table"></div>
-        </div>
-
-        <div class="card">
-            <h2 id="nooc_h1"></h2>
-            <p id="nooc_is_the_northeast_outreach_p"></p>
-            <div id="client_2025_2024_2023_table"></div>
-        </div>
-
-        <div class="card">
-            <h2 id="hss_housing_stabilization_services"></h2>
-            <p id="housing_stabilization_services_was_a_p"></p>
-            <div id="metric_2025_2024_2023_table_2"></div>
-        </div>
-
-        <div class="card">
-            <h2 id="path_the_projects_for_assistance"></h2>
-            <p id="this_program_supports_the_delivery_p"></p>
-            <div id="metric_table"></div>
-            <p id="there_were_clients_information_p"></p>
-        </div>
-
+    <div class="container" id="glossary_content">
+        <div id="general_client_characteristics"></div>
+        <div id="tutc_chemical_use_table"></div>
+        <div id="tutc_primary_diagnoses_table"></div>
+        <div id="tutc_gender_table"></div>
+        <div id="tutc_age_table"></div>
+        <div id="tutc_race_table"></div>
+        <div id="tutc_education_table"></div>
+        <div id="jtp_primary_diagnoses_table"></div>
+        <div id="jtp_gender_table"></div>
+        <div id="jtp_age_table"></div>
+        <div id="jtp_race_table"></div>
+        <div id="jtp_education_table"></div>
+        <div id="lodge_job_diagnoses_table"></div>
+        <div id="lodge_job_gender_table"></div>
+        <div id="lodge_job_age_table"></div>
+        <div id="lodge_job_race_table"></div>
+        <div id="lodge_job_education_table"></div>
+        <div id="transition_lodge_diagnoses_table"></div>
+        <div id="transition_lodge_gender_table"></div>
+        <div id="transition_lodge_age_table"></div>
+        <div id="transition_lodge_race_table"></div>
+        <div id="transition_lodge_education_table"></div>
+        <div id="csp_diagnoses_table"></div>
+        <div id="csp_gender_table"></div>
+        <div id="csp_age_table"></div>
+        <div id="csp_race_table"></div>
+        <div id="csp_education_table"></div>
+        <div id="lodge_activity_table"></div>
     </div>
 </section>
 
+<div class="footer">
+ <strong>Tasks Unlimited</strong> · Empowering individuals with mental illness to achieve<br>
+ community integration, employment & independent living
+</div>
+
+<script>
+  Chart.defaults.font.family = "'Open Sans', sans-serif";
+  Chart.defaults.plugins.legend.display = false;
+  
+  const animateNumber = (el) => {
+    const target = parseFloat(el.getAttribute('data-num'));
+    const prefix = el.getAttribute('data-prefix');
+    const suffix = el.getAttribute('data-suffix');
+    const duration = 2000;
+    const start = performance.now();
+    const isDecimal = target % 1 !== 0;
+    
+    const step = (now) => {
+      const progress = Math.min((now - start) / duration, 1);
+      const easeProgress = 1 - Math.pow(1 - progress, 3);
+      let current = target * easeProgress;
+      
+      if (isDecimal) {
+         current = current.toFixed(1);
+      } else {
+         current = Math.floor(current).toLocaleString();
+      }
+      
+      el.innerText = `${prefix}${current}${suffix}`;
+      
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      } else {
+        el.innerText = el.getAttribute('data-target-text');
+      }
+    };
+    requestAnimationFrame(step);
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const el = entry.target;
+        if (el.classList.contains('animate-in')) el.classList.add('is-visible');
+        observer.unobserve(el);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: "0px 0px -40px 0px" });
+
+  document.querySelectorAll('.animate-in').forEach(el => observer.observe(el));
+</script>
 <script src="script.js"></script>
 </body>
 </html>
