@@ -4,8 +4,10 @@
  * parses it, and dynamically populates the HTML document based on Unique_IDs.
  */
 
-// 1. Fetch Logic
 const GOOGLE_SHEETS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQr6wegUTldLyoaq7qifjk7u3mAW0ixZkpCrSsqu5-WAr53OY-WcGHH1d9grbU7lUCmQ8HElBoh5FRj/pub?output=csv";
+
+// IDs that should animate like rolling odometers
+const kineticIds = ['number_of_individuals_supported', 'number_of_one', 'number_of_two', 'number_of_three', 'number_of_four', 'number_of_new_enrollments_from_outside_tasks'];
 
 document.addEventListener("DOMContentLoaded", async () => {
     try {
@@ -91,6 +93,23 @@ function populateDOM(data) {
 
         const type = (Element_Type || '').toLowerCase();
 
+        // Handle Kinetic Numbers
+        if (kineticIds.includes(Unique_ID)) {
+            const text = Content_Body.trim();
+            element.setAttribute('data-target-text', text);
+            const matches = text.match(/^([^0-9]*)([0-9,.]+)([^0-9]*)$/);
+            if (matches) {
+                element.setAttribute('data-prefix', matches[1]);
+                element.setAttribute('data-num', matches[2].replace(/,/g, ''));
+                element.setAttribute('data-suffix', matches[3]);
+                element.innerText = `${matches[1]}0${matches[3]}`; 
+                element.classList.add('kinetic-num');
+            } else {
+                element.innerHTML = text;
+            }
+            return; // Skip standard processing for this element
+        }
+
         if (['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p'].includes(type)) {
             const cleanText = Content_Body.replace(/^#+\s/, ''); 
             element.innerText = cleanText;
@@ -116,12 +135,20 @@ function populateDOM(data) {
             });
         } else if (type === 'a') {
             if(Content_Body.match(/\.(jpeg|jpg|gif|png)$/i)) {
-                element.innerHTML = `<img src="${Content_Body}" alt="Logo" style="max-width: 250px;">`;
+                element.innerHTML = `<img src="${Content_Body}" alt="Logo" style="max-height: 200px; display: block; margin: 0 auto 24px auto;">`;
             } else {
                 element.href = Content_Body;
             }
         }
     });
+
+    // Post-Render Cleanup & Animations
+    setTimeout(() => {
+        document.querySelectorAll('.kinetic-num').forEach(num => {
+            animateNumber(num);
+            num.classList.remove('kinetic-num');
+        });
+    }, 100);
 }
 
 /**
@@ -202,7 +229,7 @@ function parseMarkdownTable(mdText) {
     const rows = mdText.trim().split('\n');
     if (rows.length < 2) return ''; 
 
-    // Draft E's standard Table styling
+    // Standard Table styling for glossary
     let tableHtml = '<div class="glossary-table-wrap">\n<table class="glossary-table">\n';
 
     rows.forEach((row, index) => {
@@ -234,3 +261,51 @@ function parseMarkdownTable(mdText) {
     tableHtml += '  </tbody>\n</table>\n</div>';
     return tableHtml;
 }
+
+/**
+ * Logic to animate numbers counting upwards
+ */
+const animateNumber = (el) => {
+    const target = parseFloat(el.getAttribute('data-num'));
+    const prefix = el.getAttribute('data-prefix');
+    const suffix = el.getAttribute('data-suffix');
+    const duration = 2000;
+    const start = performance.now();
+    const isDecimal = target % 1 !== 0;
+    
+    const step = (now) => {
+        const progress = Math.min((now - start) / duration, 1);
+        const easeProgress = 1 - Math.pow(1 - progress, 3);
+        let current = target * easeProgress;
+        
+        if (isDecimal) {
+            current = current.toFixed(1);
+        } else {
+            current = Math.floor(current).toLocaleString();
+        }
+        
+        el.innerText = `${prefix}${current}${suffix}`;
+        
+        if (progress < 1) {
+            requestAnimationFrame(step);
+        } else {
+            el.innerText = el.getAttribute('data-target-text');
+        }
+    };
+    requestAnimationFrame(step);
+};
+
+/**
+ * Fade-in animations via Intersection Observer
+ */
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            const el = entry.target;
+            if (el.classList.contains('animate-in')) el.classList.add('is-visible');
+            observer.unobserve(el);
+        }
+    });
+}, { threshold: 0.1, rootMargin: "0px 0px -40px 0px" });
+
+document.querySelectorAll('.animate-in').forEach(el => observer.observe(el));
