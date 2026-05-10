@@ -12,9 +12,9 @@ const kineticIds = ['number_of_individuals_supported', 'number_of_one', 'number_
 // Config for dynamically generated Donut Charts
 const donutChartsConfig = [
     { id: 'gender_table', gid: '1957671731', type: 'doughnut' },
-    { id: 'age_table', gid: '1072935215', type: 'doughnut' },
+    { id: 'age_table', gid: '1072935215', type: 'pie' },
     { id: 'education_table', gid: '1185639058', type: 'bar' },
-    { id: 'race_table', gid: '1563602712', type: 'pie' },
+    { id: 'race_table', gid: '1563602712', type: 'polarArea' },
     { id: 'primary_table', gid: '824597336', type: 'polarArea' }
 ];
 
