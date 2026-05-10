@@ -140,6 +140,8 @@ async function fetchAndRenderDonuts() {
                 container.style.height = '320px';
                 container.style.width = '100%';
                 container.style.marginTop = '15px';
+                container.style.display = 'flex';
+                container.style.justifyContent = 'center';
             }
         } catch (err) {
             console.error(`Error processing chart ${chart.id}:`, err);
