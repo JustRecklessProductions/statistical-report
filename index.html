@@ -225,8 +225,9 @@
  .demo-grid-2 { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 8px !important; margin-top: 8px !important; }
  
 /* Make Chart Containers Smaller on Print so all 5 fit on one page */
- #gender_table, #age_table, #education_table, #race_table, #primary_table { height: 130px !important; margin-top: 5px !important; margin-bottom: 5px !important; }
- #gender_table canvas, #age_table canvas, #education_table canvas, #race_table canvas, #primary_table canvas { max-height: 130px !important; max-width: 100% !important; }
+ #gender_table, #age_table, #education_table, #race_table, #primary_table { height: 175px !important; margin-top: 5px !important; margin-bottom: 5px !important; }
+ /* Canvas explicitly auto-sizes to container without CSS stretching to prevent oval skewing */
+ #gender_table canvas, #age_table canvas, #education_table canvas, #race_table canvas, #primary_table canvas { max-height: 100% !important; width: auto !important; height: auto !important; margin: 0 auto !important; display: block !important; }
 
  /* Prevent awkward page breaks mid-card and tighten padding */
  .card { background: var(--white) !important; padding: 16px !important; margin-bottom: 12px !important; border: 1px solid rgba(226,232,240,0.9) !important; break-inside: avoid; page-break-inside: avoid; }
