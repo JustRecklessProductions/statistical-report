@@ -34,10 +34,23 @@ const csvString = await response.text();
         buildGlossaryIndex(dataObjects);
 
         // Fetch and render donut charts concurrently from the other tabs
-        fetchAndRenderDonuts();
+        await fetchAndRenderDonuts();
+
+        // Hide the pure white preloader now that the layout is fully expanded
+        const preloader = document.getElementById('page-preloader');
+        if (preloader) {
+            preloader.classList.add('is-hidden');
+            setTimeout(() => preloader.remove(), 600);
+        }
+
+        // NOW initialize the observer so it correctly calculates viewport positions
+        document.querySelectorAll('.animate-in, .kinetic-num').forEach(el => observer.observe(el));
         
     } catch (error) {
         console.error("Error initializing dynamic content:", error);
+        // Hide preloader even on error to prevent indefinite white screen
+        const preloader = document.getElementById('page-preloader');
+        if (preloader) preloader.classList.add('is-hidden');
     }
 });
 
@@ -270,14 +283,6 @@ function populateDOM(data) {
             element.innerHTML = Content_Body;
         }
     });
-
-    // Post-Render Cleanup & Animations
-    setTimeout(() => {
-        document.querySelectorAll('.kinetic-num').forEach(num => {
-            animateNumber(num);
-            num.classList.remove('kinetic-num');
-        });
-    }, 100);
 }
 
 /**
@@ -432,12 +437,14 @@ const observer = new IntersectionObserver((entries) => {
         if (entry.isIntersecting) {
             const el = entry.target;
             if (el.classList.contains('animate-in')) el.classList.add('is-visible');
+            if (el.classList.contains('kinetic-num')) {
+                animateNumber(el);
+                el.classList.remove('kinetic-num'); // Stop double-firing
+            }
             observer.unobserve(el);
         }
     });
 }, { threshold: 0.1, rootMargin: "0px 0px -40px 0px" });
-
-document.querySelectorAll('.animate-in').forEach(el => observer.observe(el));
 
 /**
  * 4. Build Dynamic Glossary Index (Web Dropdown / Print TOC)
