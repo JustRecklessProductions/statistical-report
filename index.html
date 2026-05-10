@@ -161,6 +161,17 @@
 
  @media (max-width: 900px) { .demo-grid, .demo-grid-2 { grid-template-columns: 1fr; } .outcome-grid { grid-template-columns: 1fr 1fr; } .hero-number { font-size: 64px; } }
  @media (max-width: 600px) { .outcome-grid { grid-template-columns: 1fr; } .hero-number { font-size: 52px; } .hero-subtitle { font-size: 18px; } .bar-label { width: 110px; font-size: 11px; } }
+
+ /* ─── PRINT STYLES ─── */
+ @media print {
+ body { -webkit-print-color-adjust: exact; print-color-adjust: exact; background: var(--cream) !important; }
+ .top-nav, #glossary-index, #client_satisfaction_data_link { display: none !important; }
+ .hero, .section-stripe { width: 100% !important; margin-left: 0 !important; padding-top: 30px !important; padding-bottom: 30px !important; }
+ .hero::before, .hero::after { display: none !important; }
+ .container { width: 100% !important; max-width: 100% !important; padding: 0 20px !important; }
+ .card, .outcome-card, .admit-hero-card { break-inside: avoid; page-break-inside: avoid; }
+ .outcome-grid, .demo-grid, .demo-grid-2 { gap: 15px !important; }
+ }
 </style>
 </head>
 <body>
