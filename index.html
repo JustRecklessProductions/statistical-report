@@ -156,12 +156,16 @@
  .glossary-toc-wrap li { margin-bottom: 8px; border-bottom: 1px dashed var(--light-gray); padding-bottom: 4px; }
  .glossary-toc-wrap a { text-decoration: none; color: var(--navy); font-weight: 600; font-size: 14px; }
 
- /* Table Overrides */
+/* Table Overrides */
  .glossary-table-wrap { background: var(--white); border-radius: var(--radius); box-shadow: var(--card-shadow); padding: 22px; border: 1px solid rgba(255,255,255); overflow-x: auto; margin-bottom: 20px;}
  table.glossary-table { width: 100%; border-collapse: collapse; font-size: 13.5px; color: var(--warm-gray); min-width: 600px;}
- table.glossary-table thead th { font-family: 'Montserrat', sans-serif; font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.7px; color: var(--navy); background: var(--softest-gray); border-bottom: 2px solid var(--border-color); padding: 12px 10px; text-align: left; }
+ table.glossary-table thead th { font-family: 'Montserrat', sans-serif; font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.7px; color: var(--navy); background: var(--softest-gray); border-bottom: 2px solid var(--light-gray); padding: 12px 10px; text-align: left; }
  table.glossary-table tbody td { border-bottom: 1px solid var(--light-gray); padding: 10px 10px; }
  table.glossary-table tbody tr:nth-child(even) td { background: rgba(250,249,247,0.5); }
+ 
+ /* Align all data columns (2nd column and beyond) to the center for a uniform, professional look */
+ table.glossary-table thead th:not(:first-child), 
+ table.glossary-table tbody td:not(:first-child) { text-align: center; }
  
  .footer { text-align: center; padding: 36px 24px 32px; color: var(--mid-gray); font-size: 13px; font-style: italic; line-height: 1.6; }
  .footer strong { color: var(--navy); font-style: normal; }
