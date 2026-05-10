@@ -183,14 +183,15 @@
  /* Force Page Break Before Glossary */
  #glossary { break-before: page; page-break-before: always; }
 
- /* Layout Resets (Preserves original Web Colors & Backgrounds!) */
- .hero, .section-stripe { width: 100% !important; margin-left: 0 !important; padding-top: 20px !important; padding-bottom: 20px !important; }
+ /* Background Resets (Transparent sections, preserve card colors) */
+ .hero, .section-stripe { width: 100% !important; margin-left: 0 !important; padding-top: 20px !important; padding-bottom: 20px !important; background: transparent !important; }
  .hero::before, .hero::after { display: none !important; }
+ .hero * { color: var(--navy) !important; }
  .container { width: 100% !important; max-width: 100% !important; padding: 0 15px !important; }
  .outcome-grid, .demo-grid, .demo-grid-2 { gap: 15px !important; }
 
- /* Make Chart Containers Smaller on Print */
- #gender_table, #age_table, #education_table, #race_table, #primary_table { height: 220px !important; margin-top: 5px !important; }
+ /* Make Chart Containers Smaller on Print (Balanced to fit legend) */
+ #gender_table, #age_table, #education_table, #race_table, #primary_table { height: 260px !important; margin-top: 10px !important; margin-bottom: 15px !important; }
 
  /* Prevent awkward page breaks mid-card */
  .card, .outcome-card, .admit-hero-card, .glossary-table-wrap { break-inside: avoid; page-break-inside: avoid; }
