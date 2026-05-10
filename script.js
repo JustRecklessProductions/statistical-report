@@ -30,6 +30,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         const dataObjects = parseCSV(csvString);
         populateDOM(dataObjects);
 
+        // Build the Glossary Dropdown & TOC
+        buildGlossaryIndex();
+
         // Fetch and render donut charts concurrently from the other tabs
         fetchAndRenderDonuts();
         
@@ -433,3 +436,50 @@ const observer = new IntersectionObserver((entries) => {
 }, { threshold: 0.1, rootMargin: "0px 0px -40px 0px" });
 
 document.querySelectorAll('.animate-in').forEach(el => observer.observe(el));
+
+/**
+ * 4. Build Dynamic Glossary Index (Web Dropdown / Print TOC)
+ */
+function buildGlossaryIndex() {
+    const dropdown = document.getElementById('glossary-dropdown');
+    const toc = document.getElementById('glossary-toc');
+    if (!dropdown || !toc) return;
+
+    // Get all H2s inside the glossary section
+    const glossaryH2s = document.querySelectorAll('#glossary h2');
+    
+    glossaryH2s.forEach(h2 => {
+        const title = h2.innerText.trim();
+        const id = h2.id;
+        
+        // Only add if the H2 has text and an ID
+        if (title && id) {
+            // Add to dropdown
+            const option = document.createElement('option');
+            option.value = id;
+            option.innerText = title;
+            dropdown.appendChild(option);
+
+            // Add to Print TOC
+            const li = document.createElement('li');
+            li.innerHTML = `<a href="#${id}">${title}</a>`;
+            toc.appendChild(li);
+        }
+    });
+
+    // Handle dropdown selection to scroll to section
+    dropdown.addEventListener('change', (e) => {
+        const targetId = e.target.value;
+        if (targetId) {
+            const targetEl = document.getElementById(targetId);
+            if (targetEl) {
+                // Account for sticky header offset when jumping down
+                const yOffset = -80; 
+                const y = targetEl.getBoundingClientRect().top + window.scrollY + yOffset;
+                window.scrollTo({top: y, behavior: 'smooth'});
+            }
+            // Reset dropdown to default
+            dropdown.selectedIndex = 0;
+        }
+    });
+}
