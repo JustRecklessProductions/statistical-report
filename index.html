@@ -140,7 +140,7 @@
  .top-nav-toggle { appearance: none; border: 1px solid rgba(36,72,118,0.10); background: rgba(36,72,118,0.06); color: var(--navy); font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 800; padding: 6px 12px; border-radius: 999px; cursor: pointer; display: none; align-items: center; gap: 8px; }
  body.in-glossary .top-nav-toggle { display: inline-flex; }
 
-#glossary-index.glossary-index-card { position: sticky; top: var(--sticky-offset); z-index: 45; padding: 22px; margin-top: 0; background: rgba(255, 255, 255, 0.70); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.4); box-shadow: 0 10px 30px rgba(36,72,118,0.12); margin-bottom: 30px; }
+#glossary-index.glossary-index-card { position: sticky; top: var(--sticky-offset); z-index: 45; padding: 22px; margin-top: 0; background: rgba(255, 255, 255, 0.40); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.4); box-shadow: 0 10px 30px rgba(36,72,118,0.12); margin-bottom: 30px; }
  #glossary-index .glossary-index-head { text-align: center; }
  #glossary-index.is-compact .glossary-index-head { display: none; }
  #glossary-index .glossary-index-actions { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
@@ -176,41 +176,50 @@
  .top-nav, #client_satisfaction_data_link { display: none !important; }
  .glossary-dropdown-wrap { display: none !important; }
  .glossary-toc-wrap { display: block !important; margin-bottom: 20px; }
- 
- /* Hero and Containers */
- .hero, .section-stripe { width: 100% !important; margin-left: 0 !important; padding-top: 20px !important; padding-bottom: 20px !important; background: transparent !important; }
+
+ /* Strip all drop shadows globally for print */
+ * { box-shadow: none !important; text-shadow: none !important; }
+
+ /* Force Page Break Before Glossary */
+ #glossary { break-before: page; page-break-before: always; }
+
+ /* Layout Resets (Preserves original Web Colors & Backgrounds!) */
+ .hero, .section-stripe { width: 100% !important; margin-left: 0 !important; padding-top: 20px !important; padding-bottom: 20px !important; }
  .hero::before, .hero::after { display: none !important; }
- .hero * { color: var(--navy) !important; text-shadow: none !important; }
  .container { width: 100% !important; max-width: 100% !important; padding: 0 15px !important; }
  .outcome-grid, .demo-grid, .demo-grid-2 { gap: 15px !important; }
 
- /* Cards (Teal Borders, White Backgrounds, Less Padding) */
- .card, .outcome-card, .admit-hero-card, .glossary-table-wrap { 
-    break-inside: avoid; 
-    page-break-inside: avoid; 
-    box-shadow: none !important; 
-    background: var(--white) !important; 
-    border: 1px solid var(--teal) !important; 
-    padding: 16px !important; 
-    margin-bottom: 16px !important; 
+ /* Make Chart Containers Smaller on Print */
+ #gender_table, #age_table, #education_table, #race_table, #primary_table { height: 220px !important; margin-top: 5px !important; }
+
+ /* Prevent awkward page breaks mid-card */
+ .card, .outcome-card, .admit-hero-card, .glossary-table-wrap { break-inside: avoid; page-break-inside: avoid; }
+
+ /* Apply specific ink-saving compact styling to Glossary Cards ONLY */
+ #glossary .card {
+    background: var(--white) !important;
+    border: 1px solid var(--teal) !important;
+    padding: 16px !important;
+    margin-bottom: 16px !important;
  }
 
  /* Glossary Tables (Navy Lines, No Scrollbars, Compact) */
- .glossary-table-wrap { 
+ .glossary-table-wrap {
     overflow: visible !important; /* Kills the print scrollbar */
-    padding: 0 !important; 
+    padding: 0 !important;
+    border: none !important;
  }
  table.glossary-table { min-width: 100% !important; font-size: 12px !important; }
- table.glossary-table thead th { 
-    border-bottom: 2px solid var(--navy) !important; 
-    background: var(--white) !important; 
-    padding: 8px 6px !important; 
+ table.glossary-table thead th {
+    border-bottom: 2px solid var(--navy) !important;
+    background: var(--white) !important;
+    padding: 8px 6px !important;
  }
- table.glossary-table tbody td { 
-    border-bottom: 1px solid var(--navy) !important; 
-    padding: 6px !important; 
+ table.glossary-table tbody td {
+    border-bottom: 1px solid var(--navy) !important;
+    padding: 6px !important;
  }
- /* Remove alternate row shading for print to save ink/keep it clean */
+ /* Remove alternate row shading for print to save ink */
  table.glossary-table tbody tr:nth-child(even) td { background: var(--white) !important; }
  }
 </style>
