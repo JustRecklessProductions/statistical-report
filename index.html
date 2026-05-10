@@ -170,6 +170,8 @@
  @media (max-width: 600px) { .outcome-grid { grid-template-columns: 1fr; } .hero-number { font-size: 52px; } .hero-subtitle { font-size: 18px; } .bar-label { width: 110px; font-size: 11px; } }
 
 /* ─── PRINT STYLES ─── */
+ @page { size: letter; margin: 0.5in; }
+ 
  @media print {
  /* Base Page Resets */
  body { -webkit-print-color-adjust: exact; print-color-adjust: exact; background: var(--white) !important; }
@@ -183,26 +185,50 @@
  /* Force Page Break Before Glossary */
  #glossary { break-before: page; page-break-before: always; }
 
- /* Background Resets (Transparent sections, preserve card colors) */
- .hero, .section-stripe { width: 100% !important; margin-left: 0 !important; padding-top: 20px !important; padding-bottom: 20px !important; background: transparent !important; }
+ /* Container Geometry */
+ .container { width: 100% !important; max-width: none !important; padding: 0 !important; margin: 0 !important; }
+
+ /* Beautiful Rounded Hero */
+ .hero { 
+    padding: 32px 24px !important; 
+    width: 100% !important; 
+    margin: 0 0 24px 0 !important; 
+    border-radius: 24px !important; 
+ }
  .hero::before, .hero::after { display: none !important; }
- .hero * { color: var(--navy) !important; }
- .container { width: 100% !important; max-width: 100% !important; padding: 0 15px !important; }
- .outcome-grid, .demo-grid, .demo-grid-2 { gap: 15px !important; }
+ .hero-number { font-size: 64px !important; margin-bottom: 4px !important; }
+ .hero-subtitle { font-size: 16px !important; margin-bottom: 12px !important; }
+ .hero-label { font-size: 13px !important; max-width: 520px !important; margin: 0 auto !important; }
 
-/* Force Graphs to stay in grid format like Web, avoiding 1-column mobile collapse */
- .demo-grid { display: grid !important; grid-template-columns: 1fr 1fr 1fr !important; gap: 10px !important; }
- .demo-grid-2 { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 10px !important; margin-top: 10px !important; }
+ /* Section Stripes Shaping */
+ .section-stripe { 
+    border-radius: 24px !important; 
+    padding: 17px 16px 17px !important; 
+    margin-bottom: 24px !important; 
+    width: auto !important; /* Keeps it within margins */
+    margin-left: 0 !important; 
+ }
  
- /* Keep Key Outcomes exactly 2x2 */
- .outcome-grid { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
+ /* Header Adjustments */
+ .section-header { margin: 24px 0 14px !important; }
 
+ /* Remove borders inside stripes for clean floating look */
+ .section-stripe .card, .section-stripe .admit-hero-card, .section-stripe .outcome-card { border: none !important; }
+
+ /* Grids: Forced to maintain web layout (4-col outcome, 3-col/2-col charts) */
+ .outcome-grid { display: grid !important; grid-template-columns: repeat(4, 1fr) !important; gap: 6px !important; margin-top: 0 !important; }
+ .demo-grid { display: grid !important; grid-template-columns: 1fr 1fr 1fr !important; gap: 8px !important; }
+ .demo-grid-2 { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 8px !important; margin-top: 8px !important; }
+ 
  /* Make Chart Containers Smaller on Print so all 5 fit on one page */
  #gender_table, #age_table, #education_table, #race_table, #primary_table { height: 180px !important; margin-top: 5px !important; margin-bottom: 5px !important; }
 
  /* Prevent awkward page breaks mid-card and tighten padding */
- .card { padding: 12px 16px !important; margin-bottom: 12px !important; break-inside: avoid; page-break-inside: avoid; }
- .outcome-card, .admit-hero-card, .glossary-table-wrap { break-inside: avoid; page-break-inside: avoid; }
+ .card { padding: 16px !important; margin-bottom: 12px !important; border: 1px solid rgba(226,232,240,0.9) !important; break-inside: avoid; page-break-inside: avoid; }
+ .outcome-card { padding: 12px 8px !important; break-inside: avoid; page-break-inside: avoid; }
+ .admit-hero-card, .glossary-table-wrap { break-inside: avoid; page-break-inside: avoid; }
+ .outcome-num { font-size: 28px !important; }
+ .outcome-label { font-size: 11px !important; }
 
  /* Apply specific ink-saving compact styling to Glossary Cards ONLY */
  #glossary .card {
