@@ -139,6 +139,8 @@ function populateDOM(data) {
             } else {
                 element.href = Content_Body;
             }
+        } else {
+            element.innerHTML = Content_Body;
         }
     });
 
