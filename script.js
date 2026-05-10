@@ -12,10 +12,10 @@ const kineticIds = ['number_of_individuals_supported', 'number_of_one', 'number_
 // Config for dynamically generated Donut Charts
 const donutChartsConfig = [
     { id: 'gender_table', gid: '1957671731', type: 'doughnut' },
-    { id: 'age_table', gid: '1072935215', type: 'pie' },
+    { id: 'age_table', gid: '1072935215', type: 'polarArea' },
     { id: 'education_table', gid: '1185639058', type: 'bar' },
-    { id: 'race_table', gid: '1563602712', type: 'polarArea' },
-    { id: 'primary_table', gid: '824597336', type: 'polarArea' }
+    { id: 'race_table', gid: '1563602712', type: 'doughnut' },
+    { id: 'primary_table', gid: '824597336', type: 'doughnut' }
 ];
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -26,12 +26,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             throw new Error(`Failed to fetch data. HTTP Status: ${response.status}`);
         }
         
-        const csvString = await response.text();
+const csvString = await response.text();
         const dataObjects = parseCSV(csvString);
         populateDOM(dataObjects);
 
-        // Build the Glossary Dropdown & TOC
-        buildGlossaryIndex();
+        // Build the Glossary Dropdown & TOC dynamically from the raw data
+        buildGlossaryIndex(dataObjects);
 
         // Fetch and render donut charts concurrently from the other tabs
         fetchAndRenderDonuts();
@@ -440,20 +440,24 @@ document.querySelectorAll('.animate-in').forEach(el => observer.observe(el));
 /**
  * 4. Build Dynamic Glossary Index (Web Dropdown / Print TOC)
  */
-function buildGlossaryIndex() {
+function buildGlossaryIndex(data) {
     const dropdown = document.getElementById('glossary-dropdown');
     const toc = document.getElementById('glossary-toc');
     if (!dropdown || !toc) return;
 
-    // Get all H2s inside the glossary section
+    // Get all H2 IDs that exist inside the glossary section
     const glossaryH2s = document.querySelectorAll('#glossary h2');
     
     glossaryH2s.forEach(h2 => {
-        const title = h2.innerText.trim();
         const id = h2.id;
         
-        // Only add if the H2 has text and an ID
-        if (title && id) {
+        // Find the matching text straight from the CSV data to avoid render race conditions!
+        const matchingData = data.find(item => item.Unique_ID === id);
+        
+        if (matchingData && matchingData.Content_Body) {
+            // Strip out markdown hashtags if they exist in the sheet
+            const title = matchingData.Content_Body.replace(/^#+\s/, '').trim();
+            
             // Add to dropdown
             const option = document.createElement('option');
             option.value = id;
