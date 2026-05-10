@@ -477,8 +477,8 @@ function buildGlossaryIndex(data) {
         if (targetId) {
             const targetEl = document.getElementById(targetId);
             if (targetEl) {
-                // Account for sticky header offset when jumping down
-                const yOffset = -80; 
+                // Increased offset heavily to clear both the Top Nav AND the Sticky Glossary Dropdown
+                const yOffset = -240; 
                 const y = targetEl.getBoundingClientRect().top + window.scrollY + yOffset;
                 window.scrollTo({top: y, behavior: 'smooth'});
             }
