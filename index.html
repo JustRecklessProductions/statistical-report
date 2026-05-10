@@ -200,17 +200,21 @@
  .hero-subtitle { font-size: 16px !important; margin-bottom: 12px !important; }
  .hero-label { font-size: 13px !important; max-width: 520px !important; margin: 0 auto !important; }
 
+/* Custom Page Breaks */
+ .print-page-break { break-before: page; page-break-before: always; }
+
  /* Section Stripes Shaping */
  .section-stripe { 
     border-radius: 24px !important; 
     padding: 17px 16px 17px !important; 
+    margin-top: 0 !important; /* Fixes the negative margin overlap on headers! */
     margin-bottom: 24px !important; 
     width: auto !important; /* Keeps it within margins */
     margin-left: 0 !important; 
  }
  
  /* Header Adjustments */
- .section-header { margin: 24px 0 14px !important; }
+ .section-header { margin: 24px 0 14px !important; padding-top: 10px !important; }
 
  /* Remove borders inside stripes for clean floating look */
  .section-stripe .card, .section-stripe .admit-hero-card, .section-stripe .outcome-card { border: none !important; }
@@ -224,9 +228,9 @@
  #gender_table, #age_table, #education_table, #race_table, #primary_table { height: 180px !important; margin-top: 5px !important; margin-bottom: 5px !important; }
 
  /* Prevent awkward page breaks mid-card and tighten padding */
- .card { padding: 16px !important; margin-bottom: 12px !important; border: 1px solid rgba(226,232,240,0.9) !important; break-inside: avoid; page-break-inside: avoid; }
+ .card { background: var(--white) !important; padding: 16px !important; margin-bottom: 12px !important; border: 1px solid rgba(226,232,240,0.9) !important; break-inside: avoid; page-break-inside: avoid; }
  .outcome-card { padding: 12px 8px !important; break-inside: avoid; page-break-inside: avoid; }
- .admit-hero-card, .glossary-table-wrap { break-inside: avoid; page-break-inside: avoid; }
+ .admit-hero-card, .glossary-table-wrap { background: var(--white) !important; break-inside: avoid; page-break-inside: avoid; }
  .outcome-num { font-size: 28px !important; }
  .outcome-label { font-size: 11px !important; }
 
@@ -348,7 +352,7 @@
     </div>
 </div> 
 
-<div class="container">
+<div class="container print-page-break">
     <div class="section-header animate-in delay-1" style="justify-content: center; margin-bottom: 24px; margin-top: 24px;">
         <h2 style="color: var(--teal); margin: 0;">Who We Served</h2>
     </div>
