@@ -11,11 +11,11 @@ const kineticIds = ['number_of_individuals_supported', 'number_of_one', 'number_
 
 // Config for dynamically generated Donut Charts
 const donutChartsConfig = [
-    { id: 'gender_table', gid: '1957671731' },
-    { id: 'age_table', gid: '1072935215' },
-    { id: 'education_table', gid: '1185639058' },
-    { id: 'race_table', gid: '1563602712' },
-    { id: 'primary_table', gid: '824597336' }
+    { id: 'gender_table', gid: '1957671731', type: 'doughnut' },
+    { id: 'age_table', gid: '1072935215', type: 'doughnut' },
+    { id: 'education_table', gid: '1185639058', type: 'bar' },
+    { id: 'race_table', gid: '1563602712', type: 'pie' },
+    { id: 'primary_table', gid: '824597336', type: 'polarArea' }
 ];
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -91,7 +91,7 @@ async function fetchAndRenderDonuts() {
                 const ctx = container.querySelector('canvas').getContext('2d');
                 
                 new Chart(ctx, {
-                    type: 'doughnut',
+                    type: chart.type || 'doughnut',
                     data: {
                         labels: labels,
                         datasets: [{
