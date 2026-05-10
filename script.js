@@ -118,7 +118,12 @@ async function fetchAndRenderDonuts() {
                             tooltip: {
                                 callbacks: {
                                     label: function(context) {
-                                        return ` ${context.label}: ${context.raw}%`;
+                                        // Calculate the true percentage dynamically
+                                        const total = context.dataset.data.reduce((acc, curr) => acc + curr, 0);
+                                        const percentage = Math.round((context.raw / total) * 100);
+                                        
+                                        // Display: "Label: Count (Percentage%)"
+                                        return ` ${context.label}: ${context.raw} (${percentage}%)`;
                                     }
                                 }
                             }
