@@ -26,9 +26,14 @@
  --card-shadow: 0 4px 24px rgba(36,72,118,0.07), 0 1.5px 6px rgba(36,72,118,0.04);
  --card-shadow-hover: 0 8px 40px rgba(36,72,118,0.12), 0 2px 10px rgba(36,72,118,0.06);
  --radius: 20px;
- --radius-sm: 14px;
+--radius-sm: 14px;
  --radius-xs: 10px;
  }
+
+ /* Preloader Styles */
+ #page-preloader { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--white); z-index: 99999; transition: opacity 0.6s ease-out; }
+ #page-preloader.is-hidden { opacity: 0; pointer-events: none; }
+
  * { margin: 0; padding: 0; box-sizing: border-box; }
  
  html { scroll-behavior: smooth; }
@@ -146,9 +151,10 @@
  #glossary-index .glossary-index-actions { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
  #glossary-index.is-collapsed .glossary-dropdown-wrap { display: none; }
 
- /* Glossary Dropdown (Web) */
+/* Glossary Dropdown (Web) */
  .glossary-dropdown-wrap { display: flex; justify-content: center; }
  #glossary-dropdown { width: 100%; max-width: 400px; padding: 12px 16px; font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 600; color: var(--navy); background-color: var(--softest-gray); border: 1px solid var(--light-gray); border-radius: var(--radius-sm); cursor: pointer; outline: none; transition: border-color 0.2s; appearance: none; -webkit-appearance: none; text-align: center; }
+ #glossary-dropdown option { text-align: center; }
  #glossary-dropdown:focus { border-color: var(--teal); }
  
  /* Glossary TOC (Print) */
@@ -270,6 +276,8 @@
 </style>
 </head>
 <body>
+
+<div id="page-preloader"></div>
 
 <nav class="top-nav" aria-label="Report navigation">
   <div class="top-nav-inner">
