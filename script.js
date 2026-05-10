@@ -228,6 +228,18 @@ function populateDOM(data) {
         const { Unique_ID, Element_Type, Content_Body } = item;
         if (!Unique_ID) return;
 
+        // Custom injection for the Client Satisfaction embedded forms
+        if (Unique_ID === 'client_satisfaction_data_link') {
+            const iframe = document.getElementById('client_satisfaction_iframe');
+            if (iframe && Content_Body.trim() !== '') iframe.src = Content_Body.trim();
+            return;
+        }
+        if (Unique_ID === 'client_satisfaction_qr_code') {
+            const qrImg = document.getElementById('client_satisfaction_qr_img');
+            if (qrImg && Content_Body.trim() !== '') qrImg.src = Content_Body.trim();
+            return;
+        }
+
         const element = document.getElementById(Unique_ID);
         if (!element) return; 
 
