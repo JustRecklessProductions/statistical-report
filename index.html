@@ -224,8 +224,9 @@
  .demo-grid { display: grid !important; grid-template-columns: 1fr 1fr 1fr !important; gap: 8px !important; }
  .demo-grid-2 { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 8px !important; margin-top: 8px !important; }
  
- /* Make Chart Containers Smaller on Print so all 5 fit on one page */
- #gender_table, #age_table, #education_table, #race_table, #primary_table { height: 180px !important; margin-top: 5px !important; margin-bottom: 5px !important; }
+/* Make Chart Containers Smaller on Print so all 5 fit on one page */
+ #gender_table, #age_table, #education_table, #race_table, #primary_table { height: 130px !important; margin-top: 5px !important; margin-bottom: 5px !important; }
+ #gender_table canvas, #age_table canvas, #education_table canvas, #race_table canvas, #primary_table canvas { max-height: 130px !important; max-width: 100% !important; }
 
  /* Prevent awkward page breaks mid-card and tighten padding */
  .card { background: var(--white) !important; padding: 16px !important; margin-bottom: 12px !important; border: 1px solid rgba(226,232,240,0.9) !important; break-inside: avoid; page-break-inside: avoid; }
@@ -399,9 +400,35 @@
 </div>
 <div class="section-stripe" style="background: var(--orange); padding-bottom: 40px;">
     <div class="container">
-        <div class="card animate-in delay-3" style="text-align: center; margin-bottom: 0;">
-            <div id="client_satisfaction_header" class="card-title" style="border: none; margin-bottom: 0;"></div>
-            <a id="client_satisfaction_data_link" target="_blank" style="display: inline-block; padding: 12px 24px; background: var(--orange); color: var(--white); font-weight: bold; text-decoration: none; border-radius: 8px; margin-top: 15px;">View Client Satisfaction Data</a>
+        <style>
+            .print-sat-qr { display: none; }
+            @media print {
+                .web-sat-iframe { display: none !important; }
+                .print-sat-qr { 
+                    display: flex !important; 
+                    flex-direction: column; 
+                    align-items: center; 
+                    justify-content: center; 
+                    text-align: center;
+                    padding: 12px 24px;
+                }
+            }
+        </style>
+
+        <div class="card animate-in delay-3 web-sat-iframe" style="padding:0; overflow: hidden; height: 600px; border: 6px solid var(--white); margin-bottom: 0;">
+            <iframe 
+                src="https://forms.cloud.microsoft/Pages/AnalysisPage.aspx?AnalyzerToken=h0tWJHghRhzlOfKWQCS12VD9eOMKJAMj&id=a4hxScUH_UGFQVyE6fs25PgSrEVA-rJPtvqUKOFFx_hUNUpBQ1Y0T0wwUzFKM1BLQ1JFNkhGUTZMOC4u" 
+                width="100%" 
+                height="100%" 
+                style="border: none; background: #ffffff;" 
+                title="Client Satisfaction Survey Results">
+            </iframe>
+        </div>
+
+        <div class="card print-sat-qr" style="margin-bottom: 0;">
+            <img src="https://i.imgur.com/ySnnCCl.png" alt="Scan to view 2025 Client Satisfaction Data" style="max-width: 120px; height: auto; margin: 0 auto 12px;">
+            <h3 style="color: var(--navy); font-size: 18px; margin-bottom: 8px;">Explore Our Client Satisfaction Data</h3>
+            <p style="color: var(--warm-gray); font-size: 14px; max-width: 480px; margin: 0 auto; line-height: 1.5;">Scan this QR code with your smartphone camera to view comprehensive, interactive insights and detailed feedback from our 2025 Client Satisfaction Survey.</p>
         </div>
     </div>
 </div>
