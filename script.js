@@ -221,14 +221,46 @@ function parseCSV(csvText) {
 }
 
 /**
- * 3. Data-to-DOM Mapping
+ * 3. Data-to-DOM Mapping & Dynamic Routing
  */
 function populateDOM(data) {
+    const serviceContainer = document.getElementById('dynamic-service-data');
+    const glossaryContainer = document.getElementById('dynamic-glossary');
+
+    let isDynamicZone = false;
+    let activeServiceCard = null;
+    let activeGlossaryCard = null;
+
+    // Helper: Insert narrative elements safely above the jump link in the Service Card
+    function appendToServiceCard(el) {
+        if (!activeServiceCard) return;
+        const jumpLink = activeServiceCard.querySelector('.jump-link');
+        if (jumpLink) {
+            activeServiceCard.insertBefore(el, jumpLink);
+        } else {
+            activeServiceCard.appendChild(el);
+        }
+    }
+
+    // Helper: Format raw text or list elements
+    function formatText(el, type, content) {
+        if (type === 'ul' || type === 'ol') {
+            const listItems = content.split('\n').filter(line => line.trim() !== '');
+            listItems.forEach(liText => {
+                const li = document.createElement('li');
+                li.innerText = liText.replace(/^[-*+]\s|^\d+\.\s/, '');
+                el.appendChild(li);
+            });
+        } else {
+            el.innerText = content.replace(/^#+\s/, '');
+        }
+    }
+
     data.forEach(item => {
         const { Unique_ID, Element_Type, Content_Body } = item;
         if (!Unique_ID) return;
 
-        // Custom injection for the Client Satisfaction embedded forms
+        // 1. Hardcoded Iframe Hooks
         if (Unique_ID === 'client_satisfaction_data_link') {
             const iframe = document.getElementById('client_satisfaction_iframe');
             if (iframe && Content_Body.trim() !== '') iframe.src = Content_Body.trim();
@@ -240,69 +272,130 @@ function populateDOM(data) {
             return;
         }
 
-        let element = document.getElementById(Unique_ID);
-        if (!element) return; 
-
-        const type = (Element_Type || '').toLowerCase();
-
-        // Handle Kinetic Numbers
-        if (kineticIds.includes(Unique_ID)) {
-            const text = Content_Body.trim();
-            element.setAttribute('data-target-text', text);
-            const matches = text.match(/^([^0-9]*)([0-9,.]+)([^0-9]*)$/);
-            if (matches) {
-                element.setAttribute('data-prefix', matches[1]);
-                element.setAttribute('data-num', matches[2].replace(/,/g, ''));
-                element.setAttribute('data-suffix', matches[3]);
-                element.innerText = `${matches[1]}0${matches[3]}`; 
-                element.classList.add('kinetic-num');
-            } else {
-                element.innerHTML = text;
-            }
-            return; // Skip standard processing for this element
+        // 2. Identify the exact moment the Dynamic Split Generation begins
+        if (Unique_ID === 'general_client_characteristics') {
+            isDynamicZone = true;
         }
 
-        // --- DYNAMIC TAG REPLACEMENT ---
-        // If the Google Sheet specifies a text tag, and it doesn't match the current HTML tag, swap it dynamically!
-        if (['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'div', 'span'].includes(type) && element.tagName.toLowerCase() !== type) {
-            const newElement = document.createElement(type);
-            // Copy all attributes (id, class, style, etc.) over to the new tag
-            Array.from(element.attributes).forEach(attr => newElement.setAttribute(attr.name, attr.value));
-            element.replaceWith(newElement);
-            element = newElement; // Update the reference so the text injects into the new tag
+        // 3. Populate existing hardcoded elements (Hero, At-A-Glance, Custom Headers)
+        if (!isDynamicZone || document.getElementById(Unique_ID)) {
+            let existingElement = document.getElementById(Unique_ID);
+            if (!existingElement) return;
+
+            const type = (Element_Type || '').toLowerCase();
+
+            if (kineticIds.includes(Unique_ID)) {
+                const text = Content_Body.trim();
+                existingElement.setAttribute('data-target-text', text);
+                const matches = text.match(/^([^0-9]*)([0-9,.]+)([^0-9]*)$/);
+                if (matches) {
+                    existingElement.setAttribute('data-prefix', matches[1]);
+                    existingElement.setAttribute('data-num', matches[2].replace(/,/g, ''));
+                    existingElement.setAttribute('data-suffix', matches[3]);
+                    existingElement.innerText = `${matches[1]}0${matches[3]}`; 
+                    existingElement.classList.add('kinetic-num');
+                } else {
+                    existingElement.innerHTML = text;
+                }
+                return;
+            }
+
+            if (['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'div', 'span'].includes(type) && existingElement.tagName.toLowerCase() !== type) {
+                const newElement = document.createElement(type);
+                Array.from(existingElement.attributes).forEach(attr => newElement.setAttribute(attr.name, attr.value));
+                existingElement.replaceWith(newElement);
+                existingElement = newElement;
+            }
+
+            if (['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p'].includes(type)) {
+                existingElement.innerText = Content_Body.replace(/^#+\s/, '');
+            } else if (type === 'table') {
+                if (Unique_ID === 'enrollment_by_county_table') {
+                    existingElement.innerHTML = parseBarChart(Content_Body);
+                } else if (Unique_ID === 'number_of_enrollments_table') {
+                    existingElement.innerHTML = parseProgList(Content_Body);
+                } else {
+                    existingElement.innerHTML = parseMarkdownTable(Content_Body);
+                }
+            } else if (type === 'ul' || type === 'ol') {
+                existingElement.innerHTML = ''; 
+                formatText(existingElement, type, Content_Body);
+            } else {
+                existingElement.innerHTML = Content_Body;
+            }
+            
+            // If this happened to be the start of the dynamic zone but also a hardcoded header, return here.
+            if (!isDynamicZone) return;
         }
 
-        if (['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p'].includes(type)) {
-            const cleanText = Content_Body.replace(/^#+\s/, ''); 
-            element.innerText = cleanText;
-            
-        } else if (type === 'table') {
-            // Check for specific IDs that require Custom UI components instead of standard tables
-            if (Unique_ID === 'enrollment_by_county_table') {
-                element.innerHTML = parseBarChart(Content_Body);
-            } else if (Unique_ID === 'number_of_enrollments_table') {
-                element.innerHTML = parseProgList(Content_Body);
-            } else {
-                element.innerHTML = parseMarkdownTable(Content_Body);
+        // 4. The Dynamic Brain: Generating Service Data & Glossary Cards on the fly
+        if (isDynamicZone && serviceContainer && glossaryContainer) {
+            const type = (Element_Type || '').toLowerCase();
+
+            // H1 or H2: Generate identical brand new cards in BOTH sections
+            if (type === 'h1' || type === 'h2') {
+                // Create Service Data Card
+                activeServiceCard = document.createElement('div');
+                activeServiceCard.className = 'card animate-in delay-2';
+                serviceContainer.appendChild(activeServiceCard);
+
+                const sHeader = document.createElement(type);
+                sHeader.className = 'card-title';
+                sHeader.style.border = 'none';
+                sHeader.style.marginBottom = '0';
+                sHeader.innerText = Content_Body.replace(/^#+\s/, '');
+                activeServiceCard.appendChild(sHeader);
+
+                const jump = document.createElement('a');
+                jump.href = '#' + Unique_ID;
+                jump.className = 'jump-link';
+                jump.innerText = 'See full tables in Glossary →';
+                activeServiceCard.appendChild(jump);
+
+                // Create Glossary Card
+                activeGlossaryCard = document.createElement('div');
+                activeGlossaryCard.className = 'card';
+                glossaryContainer.appendChild(activeGlossaryCard);
+
+                const gHeader = document.createElement(type);
+                gHeader.id = Unique_ID; // The ORIGINAL ID anchors the Glossary!
+                gHeader.innerText = Content_Body.replace(/^#+\s/, '');
+                activeGlossaryCard.appendChild(gHeader);
+                return;
             }
-            
-        } else if (type === 'ul' || type === 'ol') {
-            element.innerHTML = ''; 
-            const listItems = Content_Body.split('\n').filter(line => line.trim() !== '');
-            
-            listItems.forEach(liText => {
-                const li = document.createElement('li');
-                li.innerText = liText.replace(/^[-*+]\s|^\d+\.\s/, '');
-                element.appendChild(li);
-            });
-        } else if (type === 'a') {
-            if(Content_Body.match(/\.(jpeg|jpg|gif|png)$/i)) {
-                element.innerHTML = `<img src="${Content_Body}" alt="Logo" style="max-height: 200px; display: block; margin: 0 auto 24px auto;">`;
-            } else {
-                element.href = Content_Body;
+
+            // H3: Appends underneath current active headers
+            if (type === 'h3') {
+                if (activeServiceCard) {
+                    const sH3 = document.createElement('h3');
+                    sH3.style.marginTop = '15px';
+                    sH3.innerText = Content_Body.replace(/^#+\s/, '');
+                    appendToServiceCard(sH3);
+                }
+                if (activeGlossaryCard) {
+                    const gH3 = document.createElement('h3');
+                    gH3.innerText = Content_Body.replace(/^#+\s/, '');
+                    activeGlossaryCard.appendChild(gH3);
+                }
+                return;
             }
-        } else {
-            element.innerHTML = Content_Body;
+
+            // Tables: Route exclusively to Glossary
+            if (type === 'table' && activeGlossaryCard) {
+                const tableWrap = document.createElement('div');
+                tableWrap.id = 'table_wrapper_' + Unique_ID; 
+                tableWrap.innerHTML = parseMarkdownTable(Content_Body);
+                activeGlossaryCard.appendChild(tableWrap);
+                return;
+            }
+
+            // Paragraphs, Lists, Divs: Route exclusively to Service Data
+            if (['p', 'ul', 'ol', 'div', 'span'].includes(type) && activeServiceCard) {
+                const textEl = document.createElement(type === 'ul' || type === 'ol' ? type : 'p');
+                textEl.id = 'service_' + Unique_ID; 
+                formatText(textEl, type, Content_Body);
+                appendToServiceCard(textEl);
+            }
         }
     });
 }
@@ -476,8 +569,8 @@ function buildGlossaryIndex(data) {
     const toc = document.getElementById('glossary-toc');
     if (!dropdown || !toc) return;
 
-    // Get all H2 IDs that exist inside the glossary section
-    const glossaryH2s = document.querySelectorAll('#glossary h2');
+    // Get all generated H1 and H2 IDs that exist inside the glossary section
+    const glossaryH2s = document.querySelectorAll('#glossary h1, #glossary h2');
     
     glossaryH2s.forEach(h2 => {
         const id = h2.id;
