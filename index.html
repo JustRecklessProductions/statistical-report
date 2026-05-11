@@ -162,7 +162,10 @@
  .glossary-toc-wrap li { margin-bottom: 8px; border-bottom: 1px dashed var(--light-gray); padding-bottom: 4px; }
  .glossary-toc-wrap a { text-decoration: none; color: var(--navy); font-weight: 600; font-size: 14px; }
 
-/* Table Overrides */
+.jump-link { display: inline-block; margin-top: 8px; font-family: 'Montserrat', sans-serif; font-size: 13.5px; font-weight: 700; color: var(--teal); text-decoration: none; transition: color 0.2s ease; }
+ .jump-link:hover { color: var(--navy); }
+
+ /* Table Overrides */
  .glossary-table-wrap { background: var(--white); border-radius: var(--radius); box-shadow: var(--card-shadow); padding: 22px; border: 1px solid rgba(255,255,255); overflow-x: auto; margin-bottom: 20px;}
  table.glossary-table { width: 100%; border-collapse: collapse; font-size: 13.5px; color: var(--warm-gray); min-width: 600px;}
  table.glossary-table thead th { font-family: 'Montserrat', sans-serif; font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.7px; color: var(--navy); background: var(--softest-gray); border-bottom: 2px solid var(--light-gray); padding: 12px 10px; text-align: left; }
@@ -246,8 +249,8 @@
  .outcome-num { font-size: 28px !important; }
  .outcome-label { font-size: 11px !important; }
 
- /* Apply specific ink-saving compact styling to Glossary Cards ONLY */
- #glossary .card {
+/* Apply specific ink-saving compact styling to Data/Glossary Cards */
+ #service-data .card, #glossary .card {
     background: var(--white) !important;
     border: 1px solid var(--teal) !important;
     padding: 16px !important;
@@ -284,6 +287,7 @@
         <div id="top_nav_text" class="top-nav-brand">Tasks Unlimited · Annual Statistical Report</div>
     <div class="top-nav-links">
       <a href="#at-a-glance" style="background: var(--navy); color: var(--white); border-color: var(--navy);">At A Glance</a>
+      <a href="#service-data" style="background: var(--teal); color: var(--white); border-color: var(--teal);">Service Data</a>
       <a href="#glossary" style="background: var(--orange); color: var(--white); border-color: var(--orange);">Glossary</a>
       <button id="glossaryIndexToggle" class="top-nav-toggle" type="button" aria-controls="glossary-index" aria-expanded="true">
         Index <span class="chev">▾</span>
@@ -447,16 +451,27 @@
     </div>
 </div>
 
+<div class="container print-page-break">
+    <div class="section-header animate-in delay-1" style="justify-content: center; margin-bottom: 24px; margin-top: 40px;">
+        <h2 id="service_data_header" style="color: var(--teal); margin: 0;">Service Data</h2>
+    </div>
+</div>
+
+<section id="service-data" class="section-shell">
+    <div id="dynamic-service-data" class="container">
+        </div>
+</section>
+
 <section id="glossary" class="section-shell">
     <div class="container">
         <div style="background: linear-gradient(135deg, var(--orange) 0%, #d4551b 100%); padding: 30px 24px; border-radius: 20px; margin: 40px 0 32px; text-align: center; box-shadow: 0 8px 24px rgba(233,102,38,0.25);">
-            <h2 style="font-size: 36px; color: var(--white); margin-bottom: 8px; font-weight: 800; letter-spacing: 1px; border:none;">Glossary</h2>
+            <h2 id="glossary_header" style="font-size: 36px; color: var(--white); margin-bottom: 8px; font-weight: 800; letter-spacing: 1px; border:none;">Glossary</h2>
             <div style="font-size: 15px; color: rgba(255,255,255,0.9);">Full data tables live here</div>
         </div>
 
         <div id="glossary-index" class="card glossary-index-card">
             <div class="glossary-index-head">
-                <div class="card-title" style="border:none; margin:0; text-align:center; padding-bottom: 15px;">Glossary Index</div>
+                <div id="glossary_index_title" class="card-title" style="border:none; margin:0; text-align:center; padding-bottom: 15px;">Glossary Index</div>
             </div>
             <div class="glossary-dropdown-wrap">
                 <select id="glossary-dropdown" aria-label="Select a glossary section">
@@ -468,217 +483,8 @@
             </div>
         </div>
 
-        <div class="card">
-            <h2 id="general_client_characteristics"></h2>
-            
-            <h3 id="all_programs"></h3>
-            <p id="in_year_tasks_unlimited_provided_p"></p>
-            <div id="genderall_participants_n_number_percent_table"></div>
-            <div id="race_all_participants_n_number_percent_table"></div>
-            <div id="education_levelall_except_nooc_placement_table"></div>
-            <p id="some_of_the_client_data_p"></p>
-            <div id="age_as_of_all_except_table"></div>
-        </div>
-
-        <div class="card">
-            <h3 id="mental_health_program_participants_h2"></h3>
-            <div id="primary_diagnosesadults_number_percent_table"></div>
-            <p id="some_of_the_client_data_p_2"></p>
-        </div>
-
-        <div class="card">
-            <h3 id="tutc_tasks_unlimited_training_center2025_h2"></h3>
-            <p id="the_tutc_program_is_a_p"></p>
-            <div id="descriptor_number_of_clients_percent_table"></div>
-            <div id="primary_diagnoses_number_percent_number_table"></div>
-            <div id="gender_number_percent_number_grads_table"></div>
-            <div id="age_on_712025_number_percent_table"></div>
-            <div id="race_number_percent_number_grads_table"></div>
-            <div id="education_level_number_percent_number_table"></div>
-        </div>
-
-        <div class="card">
-            <h3 id="job_training_program2025_h3"></h3>
-            <p id="the_job_training_program_jtp_p"></p>
-            <ul id="one_person_enrolled_in_the_ul"></ul>
-            <div id="primary_diagnoses_number_percent_number_table_2"></div>
-            <div id="gender_number_percent_number_grads_table_2"></div>
-            <div id="age_on_712025_number_percent_table_2"></div>
-            <div id="race_number_percent_number_grads_table_2"></div>
-            <div id="education_level_number_percent_number_table_2"></div>
-        </div>
-
-        <div class="card">
-            <h3 id="lodge_and_job_programs2025_h3"></h3>
-            <p id="the_lodge_and_job_programs_p"></p>
-            <div id="primary_diagnoses_number_lodge_percent_table"></div>
-            <div id="gender_number_lodge_percent_lodge_table"></div>
-            <div id="age_on_712025_number_lodge_table"></div>
-            <div id="race_number_lodge_percent_lodge_table"></div>
-            <div id="education_level_number_lodge_percent_table"></div>
-        </div>
-
-        <div class="card">
-            <h3 id="transition_lodge_program2025_h2"></h3>
-            <p id="the_transition_lodge_tlodge_is_p"></p>
-            <div id="primary_diagnoses_number_percent_number_table_3"></div>
-            <div id="gender_number_percent_number_grads_table_3"></div>
-            <div id="age_on_712025_number_percent_table_3"></div>
-            <div id="race_number_percent_number_grads_table_3"></div>
-            <div id="education_level_number_percent_number_table_3"></div>
-        </div>
-
-        <div class="card">
-            <h3 id="tasks_resource_center_csp_h2"></h3>
-            <p id="the_resource_center_provides_services_p"></p>
-            <div id="primary_diagnoses_number_of_clients_table"></div>
-            <div id="gender_number_percent_table"></div>
-            <div id="age_on_712025_number_percent_table_4"></div>
-            <div id="race_number_percent_table"></div>
-            <div id="education_level_number_percent_table"></div>
-        </div>
-
-        <div class="card">
-            <h2 id="lodge_program_data_h1"></h2>
-            <p id="lodge_program_data_include_participants_p"></p>
-            <h3 id="activity_for_year_h2"></h3>
-            <div id="year_of_admissions_of_discharges_table"></div>
-            <p id="some_participants_were_discharged_and_p"></p>
-            <h3 id="county_of_financial_responsibility_h2"></h3>
-            <div id="county_number_percent_table"></div>
-            <h3 id="retention_h2"></h3>
-            <p id="retention_data_for_lodge_participants_p"></p>
-            <ul id="of_the_69_clients_served_ul"></ul>
-            <h3 id="2025_lodge_discharges_h2"></h3>
-            <p id="discharge_data_there_was_a_p"></p>
-            <div id="months_in_program_number_discharged_table"></div>
-        </div>
-
-        <div class="card">
-            <h2 id="job_program_data_h1"></h2>
-            <p id="participants_in_the_job_program_p"></p>
-            <h3 id="activity_for_year_h2_2"></h3>
-            <div id="year_number_of_admissions_number_table"></div>
-            <p id="some_participants_were_discharged_and_p_2"></p>
-            <h3 id="county_of_financial_responsibility_h2_2"></h3>
-            <div id="county_number_percent_table_2"></div>
-            <h3 id="retention_h2_2"></h3>
-            <ul id="of_the_62_clients_served_ul"></ul>
-            <h3 id="living_arrangement_h2"></h3>
-            <p id="n49_active_on_123125_p"></p>
-            <div id="arrangement_number_percent_table"></div>
-            <h3 id="2025_job_discharges_h2"></h3>
-            <p id="n30_p"></p>
-            <div id="length_of_time_in_program_table"></div>
-        </div>
-
-        <div class="card">
-            <h2 id="program_outcomeslodge_and_job_h1"></h2>
-            <p id="program_output_and_outcome_results_p"></p>
-            <div id="performance_targets_annual_goal_total_table"></div>
-        </div>
-
-        <div class="card">
-            <h2 id="tutc_tasks_unlimited_training_center_h1"></h2>
-            <h3 id="census_h2"></h3>
-            <p id="capacity_9_average_daily_census_p"></p>
-            <h3 id="activity_for_year_h2_3"></h3>
-            <div id="metric_2024_2025_table"></div>
-            <h3 id="2025_discharges_h2"></h3>
-            <p id="n_38_p"></p>
-            <h4 id="status_at_discharge_h3"></h4>
-            <div id="discharged_status_to_lodge_to_table"></div>
-            <h3 id="2025_tutc_outcomes_h2"></h3>
-            <p id="program_output_and_outcome_data_p"></p>
-            <div id="performance_targets_goal_total_2025_table"></div>
-        </div>
-
-        <div class="card">
-            <h2 id="job_training_program_jtp_data_h1"></h2>
-            <h3 id="census_h2_2"></h3>
-            <p id="jtp_was_separated_to_jtp_p"></p>
-            <h3 id="activity_for_year_h2_4"></h3>
-            <ul id="there_a_few_people_admitteddischarged_ul"></ul>
-            <div id="metric_jtp_supported_jtp_personalized_table"></div>
-            <h3 id="2025_discharges_h2_2"></h3>
-            <p id="n_82_graduated_47_at_p"></p>
-            <h3 id="status_at_discharge_h3_2"></h3>
-            <div id="number_of_days_in_jtp_table"></div>
-            <h4 id="median_length_of_stay_in_h3"></h4>
-            <p id="2025_120_p"></p>
-            <h3 id="2024_jtp_outcome_data_h2"></h3>
-            <p id="program_output_and_outcome_data_p_2"></p>
-            <div id="performance_targets_goal_total_2025_table_2"></div>
-        </div>
-
-        <div class="card">
-            <h2 id="transition_lodge_program_data_h1"></h2>
-            <h3 id="census_h2_3"></h3>
-            <p id="capacity_3_average_daily_census_p"></p>
-            <h3 id="activity_for_year_h2_5"></h3>
-            <div id="metric_2024_2025_table_2"></div>
-            <h3 id="2025_discharges_h2_3"></h3>
-            <p id="n_6_p"></p>
-            <h4 id="status_at_discharge_h3_3"></h4>
-            <div id="discharged_status_discharged_to_job_table"></div>
-        </div>
-
-        <div class="card">
-            <h2 id="armhs_program_h1"></h2>
-            <p id="there_were_112_unduplicated_clients_p"></p>
-            <div id="metric_2025_2024_table"></div>
-        </div>
-
-        <div class="card">
-            <h2 id="case_management_program_h1"></h2>
-            <p id="there_were_total_568_unduplicated_p"></p>
-            <div id="metric_2025_2024_table_2"></div>
-            <ul id="some_of_the_client_data_ul"></ul>
-        </div>
-
-        <div class="card">
-            <h2 id="admissions_data_h1"></h2>
-            <p id="there_were_365_new_people_p"></p>
-            <h3 id="2025_enrollment_by_programs_h2"></h3>
-            <div id="program_admitted_table"></div>
-            <h3 id="2025_enrolled_by_county_h2"></h3>
-            <div id="county_enrolled_table"></div>
-        </div>
-
-        <div class="card">
-            <h2 id="extended_employment_program_data_h1"></h2>
-            <h3 id="wage_and_hour_data_h2"></h3>
-            <div id="metric_clients_outside_ee_grand_table"></div>
-            <div id="hours_worked_per_week_tubs_table"></div>
-            <h3 id="posttraining_clients_working_fulltime_on_h2"></h3>
-            <p id="17_fulltime_p"></p>
-        </div>
-
-        <div class="card">
-            <h2 id="placement_program_data_h1"></h2>
-            <p id="tasks_unlimited_job_placement_program_p"></p>
-            <div id="metric_2025_2024_2023_table"></div>
-        </div>
-
-        <div class="card">
-            <h2 id="nooc_h1"></h2>
-            <p id="nooc_is_the_northeast_outreach_p"></p>
-            <div id="client_2025_2024_2023_table"></div>
-        </div>
-
-        <div class="card">
-            <h2 id="hss_housing_stabilization_services"></h2>
-            <p id="housing_stabilization_services_was_a_p"></p>
-            <div id="metric_2025_2024_2023_table_2"></div>
-        </div>
-
-        <div class="card" style="margin-bottom: 0;">
-            <h2 id="path_the_projects_for_assistance"></h2>
-            <p id="this_program_supports_the_delivery_p"></p>
-            <div id="metric_table"></div>
-            <p id="there_were_clients_information_p"></p>
-        </div>
-
+        <div id="dynamic-glossary">
+            </div>
     </div>
 </section>
 
