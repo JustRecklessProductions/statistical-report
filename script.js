@@ -379,7 +379,11 @@ function populateDOM(data) {
                         tempWrap.innerHTML = parseMarkdownTable(Content_Body);
                         if (tempWrap.firstElementChild) {
                             const generatedTable = tempWrap.firstElementChild.querySelector('table');
-                            if (generatedTable) generatedTable.id = 'glossary_' + Unique_ID;
+                            if (generatedTable) {
+                                generatedTable.id = 'glossary_' + Unique_ID;
+                                activeTable = generatedTable; // Memory fixed!
+                                activeTableParent = generatedTable.querySelector('tbody') || generatedTable;
+                            }
                             activeGlossaryCard.appendChild(tempWrap.firstElementChild);
                         }
                     } else {
@@ -418,8 +422,16 @@ function populateDOM(data) {
             }
 
             // All other structural/text elements: Route exclusively to Service Data
-            const textGroup = ['p', 'div', 'span', 'blockquote', 'nav', 'aside', 'h3', 'h4', 'h5', 'h6', 'hr', 'br', 'ul', 'ol', 'li', 'dl', 'dt', 'dd'];
-            if (textGroup.includes(type) && activeServiceCard) {
+            const textGroup = ['p', 'div', 'span', 'blockquote', 'nav', 'aside', 'h3', 'h4', 'h5', 'h6', 'hr', 'br', 'ul', 'ol', 'li', 'dl', 'dt', 'dd', 'a', 'strong', 'em', 'i', 'b'];
+            if (textGroup.includes(type)) {
+                
+                // Failsafe: Auto-create a card if the user forgot to start with an h1 or h2
+                if (!activeServiceCard) {
+                    activeServiceCard = document.createElement('div');
+                    activeServiceCard.className = 'card animate-in delay-2';
+                    serviceContainer.appendChild(activeServiceCard);
+                }
+
                 const el = document.createElement(type);
                 el.id = 'service_' + Unique_ID; 
                 
