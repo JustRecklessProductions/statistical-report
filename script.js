@@ -435,7 +435,13 @@ function populateDOM(data) {
                 const el = document.createElement(type);
                 el.id = 'glossary_' + Unique_ID;
                 if (!activeTable) return; // Prevent orphaned rows without a table parent
-                el.innerHTML = Content_Body || '';
+                
+                // Smart TFOOT Wrapping: Auto-wrap raw text in a full-spanning row and cell
+                if (type === 'tfoot' && Content_Body && !Content_Body.includes('<tr')) {
+                    el.innerHTML = `<tr><td colspan="100%" style="font-size: 12.5px; padding-top: 12px; border-bottom: none; color: var(--mid-gray);">${Content_Body.replace(/^#+\s/, '')}</td></tr>`;
+                } else {
+                    el.innerHTML = Content_Body || '';
+                }
 
                 if (['thead', 'tbody', 'tfoot'].includes(type)) {
                     activeTable.appendChild(el);
@@ -454,7 +460,7 @@ function populateDOM(data) {
             if (textGroup.includes(type)) {
                 
                 if (isDataRouteOverride) {
-                    // VIP DATA ROUTE: Drop directly into the Glossary Card
+                    // VIP DATA ROUTE: Drop directly into the Glossary Card sequentially!
                     if (!activeGlossaryCard) {
                         activeGlossaryCard = document.createElement('div');
                         activeGlossaryCard.className = 'card';
@@ -472,12 +478,8 @@ function populateDOM(data) {
                         el.innerHTML = Content_Body ? Content_Body.replace(/^#+\s/, '') : '';
                     }
                     
-                    // The Safety Eject: If interrupting an active table build, push it right above the table wrap
-                    if (activeTable && activeTable.parentElement && activeGlossaryCard.contains(activeTable.parentElement)) {
-                        activeGlossaryCard.insertBefore(el, activeTable.parentElement);
-                    } else {
-                        activeGlossaryCard.appendChild(el);
-                    }
+                    // Pure sequential appending directly into the card
+                    activeGlossaryCard.appendChild(el);
                     
                 } else {
                     // STANDARD ROUTE: Drop into Service Data Card
