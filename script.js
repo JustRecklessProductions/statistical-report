@@ -372,33 +372,47 @@ function populateDOM(data) {
             // Table Components: Route exclusively to Glossary and nest intelligently
             const tableParts = ['table', 'thead', 'tbody', 'tfoot', 'tr', 'td', 'th'];
             if (tableParts.includes(type) && activeGlossaryCard) {
+                if (type === 'table') {
+                    // Fallback: If you provide full Markdown inside the 'table' row, it builds the whole structure at once
+                    if (Content_Body && Content_Body.includes('|')) {
+                        const tempWrap = document.createElement('div');
+                        tempWrap.innerHTML = parseMarkdownTable(Content_Body);
+                        if (tempWrap.firstElementChild) {
+                            const generatedTable = tempWrap.firstElementChild.querySelector('table');
+                            if (generatedTable) generatedTable.id = 'glossary_' + Unique_ID;
+                            activeGlossaryCard.appendChild(tempWrap.firstElementChild);
+                        }
+                    } else {
+                        // Manual row-by-row assembly mode
+                        const el = document.createElement('table');
+                        el.id = 'glossary_' + Unique_ID;
+                        el.className = 'glossary-table';
+                        
+                        const wrap = document.createElement('div');
+                        wrap.className = 'glossary-table-wrap';
+                        wrap.appendChild(el);
+                        
+                        activeGlossaryCard.appendChild(wrap);
+                        activeTable = el;
+                        activeTableParent = el;
+                    }
+                    return;
+                }
+
+                // Handle table children (tr, td, thead, etc.)
                 const el = document.createElement(type);
                 el.id = 'glossary_' + Unique_ID;
-                
-                if (type === 'table') {
-                    const wrap = document.createElement('div');
-                    wrap.className = 'glossary-table-wrap';
-                    el.className = 'glossary-table';
-                    // Fallback: If you provide full Markdown inside the 'table' row, it renders instantly
-                    if (Content_Body && Content_Body.includes('|')) el.innerHTML = parseMarkdownTable(Content_Body); 
-                    wrap.appendChild(el);
-                    activeGlossaryCard.appendChild(wrap);
-                    
-                    activeTable = el;
-                    activeTableParent = el;
-                } else {
-                    if (!activeTable) return; // Prevent orphaned rows without a table
-                    el.innerHTML = Content_Body || '';
+                if (!activeTable) return; // Prevent orphaned rows without a table parent
+                el.innerHTML = Content_Body || '';
 
-                    if (['thead', 'tbody', 'tfoot'].includes(type)) {
-                        activeTable.appendChild(el);
-                        activeTableParent = el;
-                    } else if (type === 'tr') {
-                        (activeTableParent || activeTable).appendChild(el);
-                        activeTr = el;
-                    } else if (['td', 'th'].includes(type)) {
-                        if (activeTr) activeTr.appendChild(el);
-                    }
+                if (['thead', 'tbody', 'tfoot'].includes(type)) {
+                    activeTable.appendChild(el);
+                    activeTableParent = el;
+                } else if (type === 'tr') {
+                    (activeTableParent || activeTable).appendChild(el);
+                    activeTr = el;
+                } else if (['td', 'th'].includes(type)) {
+                    if (activeTr) activeTr.appendChild(el);
                 }
                 return;
             }
