@@ -188,9 +188,9 @@
  @media print {
  /* Base Page Resets */
  body { -webkit-print-color-adjust: exact; print-color-adjust: exact; background: var(--white) !important; }
- .top-nav, #client_satisfaction_data_link { display: none !important; }
- .glossary-dropdown-wrap { display: none !important; }
- .glossary-toc-wrap { display: block !important; margin-bottom: 20px; }
+.top-nav, #client_satisfaction_data_link { display: none !important; }
+ .glossary-dropdown-wrap, .glossary-toc-wrap, #glossary-index { display: none !important; }
+ .jump-link { display: none !important; }
 
  /* Strip all drop shadows globally for print */
  * { box-shadow: none !important; text-shadow: none !important; }
@@ -452,8 +452,9 @@
 </div>
 
 <div class="container print-page-break">
-    <div class="section-header animate-in delay-1" style="justify-content: center; margin-bottom: 24px; margin-top: 40px;">
-        <h2 id="service_data_header" style="color: var(--teal); margin: 0;">Service Data</h2>
+    <div class="animate-in delay-1" style="background: linear-gradient(135deg, var(--teal) 0%, #2a8a8f 100%); padding: 30px 24px; border-radius: 20px; margin: 40px 0 32px; text-align: center; box-shadow: 0 8px 24px rgba(53,159,165,0.25);">
+        <h2 id="service_data_header" style="font-size: 36px; color: var(--white); margin-bottom: 8px; font-weight: 800; letter-spacing: 1px; border:none;">Service Data</h2>
+        <div style="font-size: 15px; color: rgba(255,255,255,0.9);">Detailed program summaries and narratives</div>
     </div>
 </div>
 
