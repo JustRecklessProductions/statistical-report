@@ -240,7 +240,7 @@ function populateDOM(data) {
             return;
         }
 
-        const element = document.getElementById(Unique_ID);
+        let element = document.getElementById(Unique_ID);
         if (!element) return; 
 
         const type = (Element_Type || '').toLowerCase();
@@ -260,6 +260,16 @@ function populateDOM(data) {
                 element.innerHTML = text;
             }
             return; // Skip standard processing for this element
+        }
+
+        // --- DYNAMIC TAG REPLACEMENT ---
+        // If the Google Sheet specifies a text tag, and it doesn't match the current HTML tag, swap it dynamically!
+        if (['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'div', 'span'].includes(type) && element.tagName.toLowerCase() !== type) {
+            const newElement = document.createElement(type);
+            // Copy all attributes (id, class, style, etc.) over to the new tag
+            Array.from(element.attributes).forEach(attr => newElement.setAttribute(attr.name, attr.value));
+            element.replaceWith(newElement);
+            element = newElement; // Update the reference so the text injects into the new tag
         }
 
         if (['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p'].includes(type)) {
