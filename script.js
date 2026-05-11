@@ -230,6 +230,11 @@ function populateDOM(data) {
     let isDynamicZone = false;
     let activeServiceCard = null;
     let activeGlossaryCard = null;
+    
+    // Table assembly tracking variables
+    let activeTable = null;
+    let activeTableParent = null; 
+    let activeTr = null;
 
     // Helper: Insert narrative elements safely above the jump link in the Service Card
     function appendToServiceCard(el) {
@@ -248,11 +253,11 @@ function populateDOM(data) {
             const listItems = content.split('\n').filter(line => line.trim() !== '');
             listItems.forEach(liText => {
                 const li = document.createElement('li');
-                li.innerText = liText.replace(/^[-*+]\s|^\d+\.\s/, '');
+                li.innerHTML = liText.replace(/^[-*+]\s|^\d+\.\s/, ''); 
                 el.appendChild(li);
             });
         } else {
-            el.innerText = content.replace(/^#+\s/, '');
+            el.innerHTML = content ? content.replace(/^#+\s/, '') : '';
         }
     }
 
@@ -273,11 +278,12 @@ function populateDOM(data) {
         }
 
         // 2. Identify the exact moment the Dynamic Split Generation begins
-        if (Unique_ID === 'general_client_characteristics') {
+        if (Unique_ID === 'begin_dynamic_building_mode') {
             isDynamicZone = true;
+            return; // Skip rendering this marker
         }
 
-        // 3. Populate existing hardcoded elements (Hero, At-A-Glance, Custom Headers)
+        // 3. Populate existing hardcoded elements (Hero, At-A-Glance)
         if (!isDynamicZone || document.getElementById(Unique_ID)) {
             let existingElement = document.getElementById(Unique_ID);
             if (!existingElement) return;
@@ -300,15 +306,17 @@ function populateDOM(data) {
                 return;
             }
 
-            if (['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'div', 'span'].includes(type) && existingElement.tagName.toLowerCase() !== type) {
+            const standardTypes = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'div', 'span', 'br', 'hr', 'nav', 'aside', 'blockquote', 'dl', 'dt', 'dd'];
+            
+            if (standardTypes.includes(type) && existingElement.tagName.toLowerCase() !== type) {
                 const newElement = document.createElement(type);
                 Array.from(existingElement.attributes).forEach(attr => newElement.setAttribute(attr.name, attr.value));
                 existingElement.replaceWith(newElement);
                 existingElement = newElement;
             }
 
-            if (['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p'].includes(type)) {
-                existingElement.innerText = Content_Body.replace(/^#+\s/, '');
+            if (standardTypes.includes(type)) {
+                existingElement.innerHTML = Content_Body ? Content_Body.replace(/^#+\s/, '') : '';
             } else if (type === 'table') {
                 if (Unique_ID === 'enrollment_by_county_table') {
                     existingElement.innerHTML = parseBarChart(Content_Body);
@@ -324,7 +332,6 @@ function populateDOM(data) {
                 existingElement.innerHTML = Content_Body;
             }
             
-            // If this happened to be the start of the dynamic zone but also a hardcoded header, return here.
             if (!isDynamicZone) return;
         }
 
@@ -334,7 +341,6 @@ function populateDOM(data) {
 
             // H1 or H2: Generate identical brand new cards in BOTH sections
             if (type === 'h1' || type === 'h2') {
-                // Create Service Data Card
                 activeServiceCard = document.createElement('div');
                 activeServiceCard.className = 'card animate-in delay-2';
                 serviceContainer.appendChild(activeServiceCard);
@@ -343,7 +349,7 @@ function populateDOM(data) {
                 sHeader.className = 'card-title';
                 sHeader.style.border = 'none';
                 sHeader.style.marginBottom = '0';
-                sHeader.innerText = Content_Body.replace(/^#+\s/, '');
+                sHeader.innerHTML = Content_Body.replace(/^#+\s/, '');
                 activeServiceCard.appendChild(sHeader);
 
                 const jump = document.createElement('a');
@@ -352,49 +358,65 @@ function populateDOM(data) {
                 jump.innerText = 'See full tables in Glossary →';
                 activeServiceCard.appendChild(jump);
 
-                // Create Glossary Card
                 activeGlossaryCard = document.createElement('div');
                 activeGlossaryCard.className = 'card';
                 glossaryContainer.appendChild(activeGlossaryCard);
 
                 const gHeader = document.createElement(type);
-                gHeader.id = Unique_ID; // The ORIGINAL ID anchors the Glossary!
-                gHeader.innerText = Content_Body.replace(/^#+\s/, '');
+                gHeader.id = Unique_ID; 
+                gHeader.innerHTML = Content_Body.replace(/^#+\s/, '');
                 activeGlossaryCard.appendChild(gHeader);
                 return;
             }
 
-            // H3: Appends underneath current active headers
-            if (type === 'h3') {
-                if (activeServiceCard) {
-                    const sH3 = document.createElement('h3');
-                    sH3.style.marginTop = '15px';
-                    sH3.innerText = Content_Body.replace(/^#+\s/, '');
-                    appendToServiceCard(sH3);
-                }
-                if (activeGlossaryCard) {
-                    const gH3 = document.createElement('h3');
-                    gH3.innerText = Content_Body.replace(/^#+\s/, '');
-                    activeGlossaryCard.appendChild(gH3);
+            // Table Components: Route exclusively to Glossary and nest intelligently
+            const tableParts = ['table', 'thead', 'tbody', 'tfoot', 'tr', 'td', 'th'];
+            if (tableParts.includes(type) && activeGlossaryCard) {
+                const el = document.createElement(type);
+                el.id = 'glossary_' + Unique_ID;
+                
+                if (type === 'table') {
+                    const wrap = document.createElement('div');
+                    wrap.className = 'glossary-table-wrap';
+                    el.className = 'glossary-table';
+                    // Fallback: If you provide full Markdown inside the 'table' row, it renders instantly
+                    if (Content_Body && Content_Body.includes('|')) el.innerHTML = parseMarkdownTable(Content_Body); 
+                    wrap.appendChild(el);
+                    activeGlossaryCard.appendChild(wrap);
+                    
+                    activeTable = el;
+                    activeTableParent = el;
+                } else {
+                    if (!activeTable) return; // Prevent orphaned rows without a table
+                    el.innerHTML = Content_Body || '';
+
+                    if (['thead', 'tbody', 'tfoot'].includes(type)) {
+                        activeTable.appendChild(el);
+                        activeTableParent = el;
+                    } else if (type === 'tr') {
+                        (activeTableParent || activeTable).appendChild(el);
+                        activeTr = el;
+                    } else if (['td', 'th'].includes(type)) {
+                        if (activeTr) activeTr.appendChild(el);
+                    }
                 }
                 return;
             }
 
-            // Tables: Route exclusively to Glossary
-            if (type === 'table' && activeGlossaryCard) {
-                const tableWrap = document.createElement('div');
-                tableWrap.id = 'table_wrapper_' + Unique_ID; 
-                tableWrap.innerHTML = parseMarkdownTable(Content_Body);
-                activeGlossaryCard.appendChild(tableWrap);
-                return;
-            }
+            // All other structural/text elements: Route exclusively to Service Data
+            const textGroup = ['p', 'div', 'span', 'blockquote', 'nav', 'aside', 'h3', 'h4', 'h5', 'h6', 'hr', 'br', 'ul', 'ol', 'li', 'dl', 'dt', 'dd'];
+            if (textGroup.includes(type) && activeServiceCard) {
+                const el = document.createElement(type);
+                el.id = 'service_' + Unique_ID; 
+                
+                if (type === 'h3') el.style.marginTop = '15px';
 
-            // Paragraphs, Lists, Divs: Route exclusively to Service Data
-            if (['p', 'ul', 'ol', 'div', 'span'].includes(type) && activeServiceCard) {
-                const textEl = document.createElement(type === 'ul' || type === 'ol' ? type : 'p');
-                textEl.id = 'service_' + Unique_ID; 
-                formatText(textEl, type, Content_Body);
-                appendToServiceCard(textEl);
+                if (['ul', 'ol'].includes(type) && Content_Body && Content_Body.includes('\n')) {
+                    formatText(el, type, Content_Body);
+                } else if (!['hr', 'br'].includes(type)) {
+                    el.innerHTML = Content_Body ? Content_Body.replace(/^#+\s/, '') : '';
+                }
+                appendToServiceCard(el);
             }
         }
     });
