@@ -337,40 +337,68 @@ function populateDOM(data) {
 
         // 4. The Dynamic Brain: Generating Service Data & Glossary Cards on the fly
         if (isDynamicZone && serviceContainer && glossaryContainer) {
-            const type = (Element_Type || '').toLowerCase();
+            let rawType = (Element_Type || '').toLowerCase();
+            let isDataRouteOverride = false;
+            
+            const tableParts = ['table', 'thead', 'tbody', 'tfoot', 'tr', 'td', 'th'];
+            
+            // Check for the 't' override prefix (e.g., tp, th2, tul)
+            if (rawType.startsWith('t') && !tableParts.includes(rawType) && rawType.length > 1) {
+                isDataRouteOverride = true;
+                rawType = rawType.substring(1); // Strip the 't'
+            }
+            
+            const type = rawType;
 
-            // H1 or H2: Generate identical brand new cards in BOTH sections
+            // H1 or H2: Generate cards
             if (type === 'h1' || type === 'h2') {
-                activeServiceCard = document.createElement('div');
-                activeServiceCard.className = 'card animate-in delay-2';
-                serviceContainer.appendChild(activeServiceCard);
+                if (isDataRouteOverride) {
+                    // VIP DATA ROUTE: Generate brand new card exclusively in the Glossary
+                    activeGlossaryCard = document.createElement('div');
+                    activeGlossaryCard.className = 'card';
+                    glossaryContainer.appendChild(activeGlossaryCard);
 
-                const sHeader = document.createElement(type);
-                sHeader.className = 'card-title';
-                sHeader.style.border = 'none';
-                sHeader.style.marginBottom = '0';
-                sHeader.innerHTML = Content_Body.replace(/^#+\s/, '');
-                activeServiceCard.appendChild(sHeader);
+                    const gHeader = document.createElement(type);
+                    gHeader.id = Unique_ID; 
+                    gHeader.innerHTML = Content_Body ? Content_Body.replace(/^#+\s/, '') : '';
+                    activeGlossaryCard.appendChild(gHeader);
+                    
+                    activeTable = null; // Reset table assembly memory
+                    return;
+                } else {
+                    // STANDARD ROUTE: Generate identical brand new cards in BOTH sections
+                    activeServiceCard = document.createElement('div');
+                    activeServiceCard.className = 'card animate-in delay-2';
+                    serviceContainer.appendChild(activeServiceCard);
 
-                const jump = document.createElement('a');
-                jump.href = '#' + Unique_ID;
-                jump.className = 'jump-link';
-                jump.innerText = 'See full tables in Glossary →';
-                activeServiceCard.appendChild(jump);
+                    const sHeader = document.createElement(type);
+                    sHeader.className = 'card-title';
+                    sHeader.style.border = 'none';
+                    sHeader.style.marginBottom = '0';
+                    sHeader.innerHTML = Content_Body ? Content_Body.replace(/^#+\s/, '') : '';
+                    activeServiceCard.appendChild(sHeader);
 
-                activeGlossaryCard = document.createElement('div');
-                activeGlossaryCard.className = 'card';
-                glossaryContainer.appendChild(activeGlossaryCard);
+                    const jump = document.createElement('a');
+                    jump.href = '#' + Unique_ID;
+                    jump.className = 'jump-link';
+                    jump.innerText = 'See full tables in Glossary →';
+                    activeServiceCard.appendChild(jump);
 
-                const gHeader = document.createElement(type);
-                gHeader.id = Unique_ID; 
-                gHeader.innerHTML = Content_Body.replace(/^#+\s/, '');
-                activeGlossaryCard.appendChild(gHeader);
-                return;
+                    activeGlossaryCard = document.createElement('div');
+                    activeGlossaryCard.className = 'card';
+                    glossaryContainer.appendChild(activeGlossaryCard);
+
+                    const gHeader = document.createElement(type);
+                    gHeader.id = Unique_ID; 
+                    gHeader.innerHTML = Content_Body ? Content_Body.replace(/^#+\s/, '') : '';
+                    activeGlossaryCard.appendChild(gHeader);
+                    
+                    activeTable = null; // Reset table assembly memory
+                    return;
+                }
             }
 
             // Table Components: Route exclusively to Glossary and nest intelligently
-            const tableParts = ['table', 'thead', 'tbody', 'tfoot', 'tr', 'td', 'th'];
             if (tableParts.includes(type) && activeGlossaryCard) {
                 if (type === 'table') {
                     // Fallback: If you provide full Markdown inside the 'table' row, it builds the whole structure at once
@@ -381,7 +409,7 @@ function populateDOM(data) {
                             const generatedTable = tempWrap.firstElementChild.querySelector('table');
                             if (generatedTable) {
                                 generatedTable.id = 'glossary_' + Unique_ID;
-                                activeTable = generatedTable; // Memory fixed!
+                                activeTable = generatedTable; 
                                 activeTableParent = generatedTable.querySelector('tbody') || generatedTable;
                             }
                             activeGlossaryCard.appendChild(tempWrap.firstElementChild);
@@ -421,28 +449,57 @@ function populateDOM(data) {
                 return;
             }
 
-            // All other structural/text elements: Route exclusively to Service Data
+            // All other structural/text elements
             const textGroup = ['p', 'div', 'span', 'blockquote', 'nav', 'aside', 'h3', 'h4', 'h5', 'h6', 'hr', 'br', 'ul', 'ol', 'li', 'dl', 'dt', 'dd', 'a', 'strong', 'em', 'i', 'b'];
             if (textGroup.includes(type)) {
                 
-                // Failsafe: Auto-create a card if the user forgot to start with an h1 or h2
-                if (!activeServiceCard) {
-                    activeServiceCard = document.createElement('div');
-                    activeServiceCard.className = 'card animate-in delay-2';
-                    serviceContainer.appendChild(activeServiceCard);
-                }
+                if (isDataRouteOverride) {
+                    // VIP DATA ROUTE: Drop directly into the Glossary Card
+                    if (!activeGlossaryCard) {
+                        activeGlossaryCard = document.createElement('div');
+                        activeGlossaryCard.className = 'card';
+                        glossaryContainer.appendChild(activeGlossaryCard);
+                    }
+                    
+                    const el = document.createElement(type);
+                    el.id = 'glossary_text_' + Unique_ID; 
+                    
+                    if (type === 'h3') el.style.marginTop = '15px';
 
-                const el = document.createElement(type);
-                el.id = 'service_' + Unique_ID; 
-                
-                if (type === 'h3') el.style.marginTop = '15px';
+                    if (['ul', 'ol'].includes(type) && Content_Body && Content_Body.includes('\n')) {
+                        formatText(el, type, Content_Body);
+                    } else if (!['hr', 'br'].includes(type)) {
+                        el.innerHTML = Content_Body ? Content_Body.replace(/^#+\s/, '') : '';
+                    }
+                    
+                    // The Safety Eject: If interrupting an active table build, push it right above the table wrap
+                    if (activeTable && activeTable.parentElement && activeGlossaryCard.contains(activeTable.parentElement)) {
+                        activeGlossaryCard.insertBefore(el, activeTable.parentElement);
+                    } else {
+                        activeGlossaryCard.appendChild(el);
+                    }
+                    
+                } else {
+                    // STANDARD ROUTE: Drop into Service Data Card
+                    // Failsafe: Auto-create a card if the user forgot to start with an h1 or h2
+                    if (!activeServiceCard) {
+                        activeServiceCard = document.createElement('div');
+                        activeServiceCard.className = 'card animate-in delay-2';
+                        serviceContainer.appendChild(activeServiceCard);
+                    }
 
-                if (['ul', 'ol'].includes(type) && Content_Body && Content_Body.includes('\n')) {
-                    formatText(el, type, Content_Body);
-                } else if (!['hr', 'br'].includes(type)) {
-                    el.innerHTML = Content_Body ? Content_Body.replace(/^#+\s/, '') : '';
+                    const el = document.createElement(type);
+                    el.id = 'service_' + Unique_ID; 
+                    
+                    if (type === 'h3') el.style.marginTop = '15px';
+
+                    if (['ul', 'ol'].includes(type) && Content_Body && Content_Body.includes('\n')) {
+                        formatText(el, type, Content_Body);
+                    } else if (!['hr', 'br'].includes(type)) {
+                        el.innerHTML = Content_Body ? Content_Body.replace(/^#+\s/, '') : '';
+                    }
+                    appendToServiceCard(el);
                 }
-                appendToServiceCard(el);
             }
         }
     });
