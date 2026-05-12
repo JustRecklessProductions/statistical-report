@@ -12,11 +12,12 @@ const kineticIds = ['number_of_individuals_supported', 'number_of_one', 'number_
 // Config for dynamically generated Donut Charts
 const donutChartsConfig = [
     { id: 'gender_table', gid: '1957671731', type: 'doughnut' },
-    { id: 'age_table', gid: '1072935215', type: 'pie' },
+    { id: 'age_table', gid: '1072935215', type: 'polarArea' },
     { id: 'education_table', gid: '1185639058', type: 'bar' },
-    { id: 'race_table', gid: '1563602712', type: 'pie' },
-    { id: 'primary_table', gid: '824597336', type: 'polarArea' }
+    { id: 'race_table', gid: '1563602712', type: 'doughnut' },
+    { id: 'primary_table', gid: '824597336', type: 'doughnut' }
 ];
+
 document.addEventListener("DOMContentLoaded", async () => {
     try {
         // Fetch main text_blocks data
@@ -308,6 +309,10 @@ function populateDOM(data) {
             }
 
             const standardTypes = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'div', 'span', 'br', 'hr', 'nav', 'aside', 'blockquote', 'dl', 'dt', 'dd'];
+            const trimmedBody = Content_Body ? Content_Body.trim() : '';
+            
+            // Speed Optimization: Only run the regex check if the text is short enough to actually be a URL
+            const isImage = type === 'img' || (trimmedBody.length < 500 && trimmedBody.match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i));
             
             if (standardTypes.includes(type) && existingElement.tagName.toLowerCase() !== type) {
                 const newElement = document.createElement(type);
@@ -316,7 +321,13 @@ function populateDOM(data) {
                 existingElement = newElement;
             }
 
-            if (standardTypes.includes(type)) {
+            if (isImage) {
+                if (existingElement.tagName.toLowerCase() === 'img') {
+                    existingElement.src = trimmedBody;
+                } else {
+                    existingElement.innerHTML = `<img src="${trimmedBody}" alt="Graphic" style="max-height: 180px; display: block; margin: 0 auto 12px auto;">`;
+                }
+            } else if (standardTypes.includes(type)) {
                 existingElement.innerHTML = Content_Body ? Content_Body.replace(/^#+\s/, '') : '';
             } else if (type === 'table') {
                 if (Unique_ID === 'enrollment_by_county_table') {
@@ -329,11 +340,8 @@ function populateDOM(data) {
             } else if (type === 'ul' || type === 'ol') {
                 existingElement.innerHTML = ''; 
                 formatText(existingElement, type, Content_Body);
-            } else if (type === 'img' || (Content_Body && Content_Body.match(/\.(jpeg|jpg|gif|png|webp|svg)$/i))) {
-                // Auto-detect image URLs and render them as actual images
-                existingElement.innerHTML = `<img src="${Content_Body.trim()}" alt="Graphic" style="max-height: 180px; display: block; margin: 0 auto 12px auto;">`;
             } else {
-                existingElement.innerHTML = Content_Body;
+                existingElement.innerHTML = Content_Body || '';
             }
             
             if (!isDynamicZone) return;
@@ -461,7 +469,11 @@ function populateDOM(data) {
 
             // All other structural/text elements
             const textGroup = ['p', 'div', 'span', 'blockquote', 'nav', 'aside', 'h3', 'h4', 'h5', 'h6', 'hr', 'br', 'ul', 'ol', 'li', 'dl', 'dt', 'dd', 'a', 'strong', 'em', 'i', 'b'];
-            if (textGroup.includes(type)) {
+            const trimmedBody = Content_Body ? Content_Body.trim() : '';
+            const isImage = type === 'img' || (!type && trimmedBody.length < 500 && trimmedBody.match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i));
+
+            if (textGroup.includes(type) || isImage) {
+                const elementTag = isImage ? 'div' : type;
                 
                 if (isDataRouteOverride) {
                     // VIP DATA ROUTE: Drop directly into the Glossary Card sequentially!
@@ -471,14 +483,16 @@ function populateDOM(data) {
                         glossaryContainer.appendChild(activeGlossaryCard);
                     }
                     
-                    const el = document.createElement(type);
+                    const el = document.createElement(elementTag);
                     el.id = 'glossary_text_' + Unique_ID; 
                     
-                    if (type === 'h3') el.style.marginTop = '15px';
+                    if (elementTag === 'h3') el.style.marginTop = '15px';
 
-                    if (['ul', 'ol'].includes(type) && Content_Body && Content_Body.includes('\n')) {
-                        formatText(el, type, Content_Body);
-                    } else if (!['hr', 'br'].includes(type)) {
+                    if (isImage) {
+                        el.innerHTML = `<img src="${trimmedBody}" alt="Graphic" style="max-width: 100%; height: auto; border-radius: 8px; margin: 15px 0; display: block;">`;
+                    } else if (['ul', 'ol'].includes(elementTag) && Content_Body && Content_Body.includes('\n')) {
+                        formatText(el, elementTag, Content_Body);
+                    } else if (!['hr', 'br'].includes(elementTag)) {
                         el.innerHTML = Content_Body ? Content_Body.replace(/^#+\s/, '') : '';
                     }
                     
@@ -487,21 +501,22 @@ function populateDOM(data) {
                     
                 } else {
                     // STANDARD ROUTE: Drop into Service Data Card
-                    // Failsafe: Auto-create a card if the user forgot to start with an h1 or h2
                     if (!activeServiceCard) {
                         activeServiceCard = document.createElement('div');
                         activeServiceCard.className = 'card animate-in delay-2';
                         serviceContainer.appendChild(activeServiceCard);
                     }
 
-                    const el = document.createElement(type);
+                    const el = document.createElement(elementTag);
                     el.id = 'service_' + Unique_ID; 
                     
-                    if (type === 'h3') el.style.marginTop = '15px';
+                    if (elementTag === 'h3') el.style.marginTop = '15px';
 
-                    if (['ul', 'ol'].includes(type) && Content_Body && Content_Body.includes('\n')) {
-                        formatText(el, type, Content_Body);
-                    } else if (!['hr', 'br'].includes(type)) {
+                    if (isImage) {
+                        el.innerHTML = `<img src="${trimmedBody}" alt="Graphic" style="max-width: 100%; height: auto; border-radius: 8px; margin: 15px 0; display: block;">`;
+                    } else if (['ul', 'ol'].includes(elementTag) && Content_Body && Content_Body.includes('\n')) {
+                        formatText(el, elementTag, Content_Body);
+                    } else if (!['hr', 'br'].includes(elementTag)) {
                         el.innerHTML = Content_Body ? Content_Body.replace(/^#+\s/, '') : '';
                     }
                     appendToServiceCard(el);
