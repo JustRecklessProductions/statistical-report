@@ -198,8 +198,13 @@
  /* Force all animations to complete instantly so unseen elements print perfectly */
  .animate-in, .kinetic-num { opacity: 1 !important; transform: none !important; animation: none !important; }
 
- /* Force Page Break Before Glossary */
+/* Force Page Break Before Glossary */
  #glossary { break-before: page; page-break-before: always; }
+
+ /* Compact Section Banners for Print */
+ div:has(> #glossary_header), div:has(> #service_data_header) { padding: 15px 24px !important; margin-bottom: 24px !important; }
+ #glossary_header, #service_data_header { margin-bottom: 0 !important; }
+ #glossary_header + div, #service_data_header + div { display: none !important; }
 
  /* Container Geometry */
  .container { width: 100% !important; max-width: none !important; padding: 0 !important; margin: 0 !important; }
