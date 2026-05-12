@@ -144,7 +144,8 @@ async function fetchAndRenderDonuts() {
                                 }
                             }
                         },
-                        cutout: '65%'
+                        // Only hollow out the center if it is NOT a pie chart
+                        cutout: chart.type === 'pie' ? '0%' : '65%'
                     }
                 });
                 
