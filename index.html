@@ -106,8 +106,38 @@
  .card { background: var(--white); border-radius: var(--radius); box-shadow: var(--card-shadow); padding: 28px; transition: box-shadow 0.3s ease, transform 0.3s ease; margin-bottom: 20px; }
  .card:hover { box-shadow: var(--card-shadow-hover); transform: translateY(-3px); }
  .card-title { font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 700; color: var(--navy); margin-bottom: 12px; border-bottom: 2px solid var(--softest-gray); padding-bottom: 8px; }
- .demo-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+.demo-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
  .demo-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+
+ /* Web-only centering and mobile carousel */
+ @media screen {
+    /* Centering the bottom two charts on desktop */
+    .demo-grid-2 { display: flex; justify-content: center; flex-wrap: wrap; }
+    .demo-grid-2 .card { flex: 0 1 calc(50% - 10px); max-width: 530px; }
+
+    /* Transition to Swiping Carousel for small screens */
+    @media (max-width: 750px) {
+        .demo-grid, .demo-grid-2 {
+            display: flex !important;
+            flex-wrap: nowrap !important;
+            overflow-x: auto !important;
+            scroll-snap-type: x mandatory !important;
+            gap: 15px !important;
+            padding: 10px 20px 25px !important;
+            margin: 0 -24px !important;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none; /* Hide scrollbar for Firefox */
+        }
+        .demo-grid::-webkit-scrollbar, .demo-grid-2::-webkit-scrollbar { display: none; } /* Hide scrollbar for Chrome/Safari */
+        
+        .demo-grid .card, .demo-grid-2 .card {
+            flex: 0 0 85% !important; /* Shows a peek of the next chart to encourage swiping */
+            scroll-snap-align: center !important;
+            margin-bottom: 0 !important;
+        }
+    }
+ }
+
  .outcome-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 20px; }
 
  .admit-hero-card { background: linear-gradient(135deg, var(--orange), #d4551b); border-radius: var(--radius); padding: 32px 24px; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: 0 6px 30px rgba(233,102,38,0.25); transition: transform 0.3s ease; }
