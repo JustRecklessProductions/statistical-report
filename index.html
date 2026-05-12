@@ -278,10 +278,18 @@
 /* Force Page Break Before Glossary */
  #glossary { break-before: page; page-break-before: always; }
 
- /* Compact Section Banners for Print */
- div:has(> #glossary_header), div:has(> #service_data_header) { padding: 15px 24px !important; margin-bottom: 24px !important; }
+/* Compact Section Banners for Print */
+ div:has(> #glossary_header), div:has(> #service_data_header) { 
+    padding: 15px 24px !important; 
+    margin-bottom: 24px !important; 
+    border: none !important; 
+    outline: none !important; 
+ }
  #glossary_header, #service_data_header { margin-bottom: 0 !important; }
  #glossary_header + div, #service_data_header + div { display: none !important; }
+
+ /* Deepen Table Lines for Print Visibility */
+ .prog-row { border-bottom: 1.5px solid var(--navy) !important; }
 
  /* Container Geometry */
  .container { width: 100% !important; max-width: none !important; padding: 0 !important; margin: 0 !important; }
@@ -343,8 +351,12 @@
  }
  .outcome-card { padding: 12px 8px !important; break-inside: avoid; page-break-inside: avoid; }
  .admit-hero-card, .glossary-table-wrap { background: var(--white) !important; break-inside: avoid; page-break-inside: avoid; }
- .outcome-num { font-size: 28px !important; }
+.outcome-num { font-size: 28px !important; }
  .outcome-label { font-size: 11px !important; }
+
+ /* High-Contrast Bar Graphs for Print */
+ .bar-track { background: var(--navy) !important; }
+ .bar-value { color: var(--white) !important; font-weight: 800 !important; }
 
 /* Apply specific ink-saving compact styling to Data/Glossary Cards */
  #service-data .card, #glossary .card {
