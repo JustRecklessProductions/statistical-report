@@ -148,10 +148,11 @@ async function fetchAndRenderDonuts() {
                     }
                 });
                 
-                // Add absolute dimensions to the container to prevent visual collapse
+                // Add flexible dimensions to the container to ensure perfect mobile responsiveness
                 container.style.position = 'relative';
-                container.style.height = '320px';
                 container.style.width = '100%';
+                container.style.aspectRatio = '1 / 1';
+                container.style.maxHeight = '320px';
                 container.style.marginTop = '15px';
                 container.style.display = 'flex';
                 container.style.justifyContent = 'center';
