@@ -195,6 +195,9 @@
  /* Strip all drop shadows globally for print */
  * { box-shadow: none !important; text-shadow: none !important; }
 
+ /* Force all animations to complete instantly so unseen elements print perfectly */
+ .animate-in, .kinetic-num { opacity: 1 !important; transform: none !important; animation: none !important; }
+
  /* Force Page Break Before Glossary */
  #glossary { break-before: page; page-break-before: always; }
 
