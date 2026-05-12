@@ -172,10 +172,20 @@
 
 .section-shell { padding: 0 0 22px; }
 
- /* Get Involved Section Styling */
+/* Get Involved Section Styling */
  .get-involved-grid { display: flex; justify-content: space-around; gap: 30px; margin-bottom: 10px; }
-.get-involved-col { flex: 1; text-align: center; display: flex; flex-direction: column; align-items: center; }
- .get-involved-col img { max-height: 120px; width: auto; margin-bottom: 15px; background: transparent !important; border: none !important; }
+ .get-involved-col { flex: 1; text-align: center; display: flex; flex-direction: column; align-items: center; }
+ 
+ /* Force transparency on icons to prevent black backgrounds */
+ .get-involved-col img { 
+    max-height: 120px; 
+    width: auto; 
+    margin-bottom: 15px; 
+    background-color: transparent !important; 
+    background: none !important; 
+    border: none !important; 
+    box-shadow: none !important;
+ }
  
  @media (max-width: 700px) {
     .get-involved-grid { flex-direction: column; gap: 40px; }
@@ -513,29 +523,31 @@
             <p id="client_satisfaction_link_text" style="padding: 15px; margin: 0; font-size: 14px; color: var(--mid-gray); text-align: center; border-top: 1px solid var(--light-gray);"></p>
         </div>
 
-        <div class="card print-sat-qr" style="margin-bottom: 24px;">
+        <div class="card print-sat-qr" style="margin-bottom: 0;">
             <img id="client_satisfaction_qr_img" src="" alt="Scan to view Client Satisfaction Data" style="max-width: 120px; height: auto; margin: 0 auto 12px;">
             <h3 style="color: var(--navy); font-size: 18px; margin-bottom: 8px;">Explore Our Client Satisfaction Data</h3>
             <p style="color: var(--warm-gray); font-size: 14px; max-width: 480px; margin: 0 auto; line-height: 1.5;">Scan this QR code with your smartphone camera to view comprehensive, interactive insights and detailed feedback from our Client Satisfaction Survey.</p>
         </div>
+    </div>
+</div>
 
-        <div class="card animate-in delay-1" style="text-align: center; margin-bottom: 0;">
-            <div class="get-involved-grid">
-                <div class="get-involved-col">
-                    <div id="support_link"></div>
-                    <h2 id="support_text" class="print-as-p"></h2>
-                </div>
-                <div class="get-involved-col">
-                    <div id="donate_link"></div>
-                    <h2 id="donate_text" class="print-as-p"></h2>
-                </div>
-                <div class="get-involved-col">
-                    <div id="volunteer_link"></div>
-                    <h2 id="volunteer_text" class="print-as-p"></h2>
-                </div>
+<div class="container">
+    <div class="card animate-in delay-1" style="text-align: center; margin-top: 50px; margin-bottom: 40px;">
+        <div class="get-involved-grid">
+            <div class="get-involved-col">
+                <div id="support_link"></div>
+                <h2 id="support_text" class="print-as-p"></h2>
             </div>
-            <div id="tasks_unlimited_website_link" style="margin-top: 15px; font-weight: 600;"></div>
+            <div class="get-involved-col">
+                <div id="donate_link"></div>
+                <h2 id="donate_text" class="print-as-p"></h2>
+            </div>
+            <div class="get-involved-col">
+                <div id="volunteer_link"></div>
+                <h2 id="volunteer_text" class="print-as-p"></h2>
+            </div>
         </div>
+        <div id="tasks_unlimited_website_link" style="margin-top: 15px; font-weight: 600;"></div>
     </div>
 </div>
 
