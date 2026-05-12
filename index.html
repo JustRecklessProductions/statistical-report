@@ -174,8 +174,8 @@
 
  /* Get Involved Section Styling */
  .get-involved-grid { display: flex; justify-content: space-around; gap: 30px; margin-bottom: 10px; }
- .get-involved-col { flex: 1; text-align: center; display: flex; flex-direction: column; align-items: center; }
- .get-involved-col img { max-height: 120px; width: auto; margin-bottom: 15px; }
+.get-involved-col { flex: 1; text-align: center; display: flex; flex-direction: column; align-items: center; }
+ .get-involved-col img { max-height: 120px; width: auto; margin-bottom: 15px; background: transparent !important; border: none !important; }
  
  @media (max-width: 700px) {
     .get-involved-grid { flex-direction: column; gap: 40px; }
@@ -301,7 +301,7 @@
  .card { background: var(--white) !important; padding: 16px !important; margin-bottom: 12px !important; border: 1px solid rgba(226,232,240,0.9) !important; break-inside: avoid; page-break-inside: avoid; }
  
  /* Specific Print Logic for Get Involved Icons & Text */
- .get-involved-col img { width: 15% !important; height: auto !important; margin-bottom: 5px !important; }
+ .get-involved-col img { width: 50% !important; height: auto !important; margin-bottom: 5px !important; }
  .print-as-p { 
     font-family: 'Open Sans', sans-serif !important; 
     font-size: 13px !important; 
@@ -513,10 +513,28 @@
             <p id="client_satisfaction_link_text" style="padding: 15px; margin: 0; font-size: 14px; color: var(--mid-gray); text-align: center; border-top: 1px solid var(--light-gray);"></p>
         </div>
 
-        <div class="card print-sat-qr" style="margin-bottom: 0;">
+        <div class="card print-sat-qr" style="margin-bottom: 24px;">
             <img id="client_satisfaction_qr_img" src="" alt="Scan to view Client Satisfaction Data" style="max-width: 120px; height: auto; margin: 0 auto 12px;">
             <h3 style="color: var(--navy); font-size: 18px; margin-bottom: 8px;">Explore Our Client Satisfaction Data</h3>
             <p style="color: var(--warm-gray); font-size: 14px; max-width: 480px; margin: 0 auto; line-height: 1.5;">Scan this QR code with your smartphone camera to view comprehensive, interactive insights and detailed feedback from our Client Satisfaction Survey.</p>
+        </div>
+
+        <div class="card animate-in delay-1" style="text-align: center; margin-bottom: 0;">
+            <div class="get-involved-grid">
+                <div class="get-involved-col">
+                    <div id="support_link"></div>
+                    <h2 id="support_text" class="print-as-p"></h2>
+                </div>
+                <div class="get-involved-col">
+                    <div id="donate_link"></div>
+                    <h2 id="donate_text" class="print-as-p"></h2>
+                </div>
+                <div class="get-involved-col">
+                    <div id="volunteer_link"></div>
+                    <h2 id="volunteer_text" class="print-as-p"></h2>
+                </div>
+            </div>
+            <div id="tasks_unlimited_website_link" style="margin-top: 15px; font-weight: 600;"></div>
         </div>
     </div>
 </div>
@@ -525,26 +543,6 @@
     <div class="animate-in delay-1" style="background: linear-gradient(135deg, var(--teal) 0%, #2a8a8f 100%); padding: 30px 24px; border-radius: 20px; margin: 40px 0 32px; text-align: center; box-shadow: 0 8px 24px rgba(53,159,165,0.25);">
         <h2 id="service_data_header" style="font-size: 36px; color: var(--white); margin-bottom: 8px; font-weight: 800; letter-spacing: 1px; border:none;">Service Data</h2>
         <div style="font-size: 15px; color: rgba(255,255,255,0.9);">Detailed program summaries and narratives</div>
-    </div>
-</div>
-
-<div class="container">
-    <div class="card animate-in delay-1" style="text-align: center; margin-top: 20px; margin-bottom: 40px;">
-        <div class="get-involved-grid">
-            <div class="get-involved-col">
-                <div id="support_link"></div>
-                <h2 id="support_text" class="print-as-p"></h2>
-            </div>
-            <div class="get-involved-col">
-                <div id="donate_link"></div>
-                <h2 id="donate_text" class="print-as-p"></h2>
-            </div>
-            <div class="get-involved-col">
-                <div id="volunteer_link"></div>
-                <h2 id="volunteer_text" class="print-as-p"></h2>
-            </div>
-        </div>
-        <div id="tasks_unlimited_website_link" style="margin-top: 20px; border-top: 1px solid var(--light-gray); padding-top: 20px; font-weight: 600;"></div>
     </div>
 </div>
 
