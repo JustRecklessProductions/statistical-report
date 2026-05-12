@@ -300,7 +300,14 @@ function populateDOM(data) {
             let existingElement = document.getElementById(Unique_ID);
             if (!existingElement) return;
 
-            const type = (Element_Type || '').toLowerCase();
+            let rawType = (Element_Type || '').toLowerCase();
+            let isFancy = false;
+            if (rawType.startsWith('fancy')) {
+                isFancy = true;
+                rawType = rawType.replace('fancy', '');
+            }
+            const type = rawType;
+            if (isFancy) existingElement.classList.add('fancy-style');
 
             if (kineticIds.includes(Unique_ID)) {
                 const text = Content_Body.trim();
@@ -361,13 +368,20 @@ function populateDOM(data) {
         if (isDynamicZone && serviceContainer && glossaryContainer) {
             let rawType = (Element_Type || '').toLowerCase();
             let isDataRouteOverride = false;
+            let isFancy = false;
             
             const tableParts = ['table', 'thead', 'tbody', 'tfoot', 'tr', 'td', 'th'];
             
-            // Check for the 't' override prefix (e.g., tp, th2, tul)
+            // Check for 'fancy' prefix
+            if (rawType.startsWith('fancy')) {
+                isFancy = true;
+                rawType = rawType.replace('fancy', '');
+            }
+
+            // Check for the 't' override prefix
             if (rawType.startsWith('t') && !tableParts.includes(rawType) && rawType.length > 1) {
                 isDataRouteOverride = true;
-                rawType = rawType.substring(1); // Strip the 't'
+                rawType = rawType.substring(1); 
             }
             
             const type = rawType;
@@ -519,6 +533,7 @@ function populateDOM(data) {
 
                     const el = document.createElement(elementTag);
                     el.id = 'service_' + Unique_ID; 
+                    if (isFancy) el.classList.add('fancy-style');
                     
                     if (elementTag === 'h3') el.style.marginTop = '15px';
 
