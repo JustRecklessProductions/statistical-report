@@ -17,7 +17,6 @@ const donutChartsConfig = [
     { id: 'race_table', gid: '1563602712', type: 'pie' },
     { id: 'primary_table', gid: '824597336', type: 'polarArea' }
 ];
-
 document.addEventListener("DOMContentLoaded", async () => {
     try {
         // Fetch main text_blocks data
@@ -330,6 +329,9 @@ function populateDOM(data) {
             } else if (type === 'ul' || type === 'ol') {
                 existingElement.innerHTML = ''; 
                 formatText(existingElement, type, Content_Body);
+            } else if (type === 'img' || (Content_Body && Content_Body.match(/\.(jpeg|jpg|gif|png|webp|svg)$/i))) {
+                // Auto-detect image URLs and render them as actual images
+                existingElement.innerHTML = `<img src="${Content_Body.trim()}" alt="Graphic" style="max-height: 180px; display: block; margin: 0 auto 12px auto;">`;
             } else {
                 existingElement.innerHTML = Content_Body;
             }
@@ -720,3 +722,14 @@ function buildGlossaryIndex(data) {
         }
     });
 }
+
+/**
+ * Print Failsafe: Force all kinetic numbers to their final values instantly before the print dialog opens
+ */
+window.addEventListener('beforeprint', () => {
+    document.querySelectorAll('.kinetic-num').forEach(el => {
+        const targetText = el.getAttribute('data-target-text');
+        if (targetText) el.innerText = targetText;
+        el.classList.remove('kinetic-num'); // Prevent observer from re-triggering
+    });
+});
