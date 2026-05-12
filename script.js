@@ -14,8 +14,8 @@ const donutChartsConfig = [
     { id: 'gender_table', gid: '1957671731', type: 'doughnut' },
     { id: 'age_table', gid: '1072935215', type: 'pie' },
     { id: 'education_table', gid: '1185639058', type: 'bar' },
-    { id: 'race_table', gid: '1563602712', type: 'pie' },
-    { id: 'primary_table', gid: '824597336', type: 'polarArea' }
+    { id: 'race_table', gid: '1563602712', type: 'polarArea' },
+    { id: 'primary_table', gid: '824597336', type: 'pie' }
 ];
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -43,8 +43,18 @@ const csvString = await response.text();
             setTimeout(() => preloader.remove(), 600);
         }
 
-        // NOW initialize the observer so it correctly calculates viewport positions
+// NOW initialize the observer so it correctly calculates viewport positions
         document.querySelectorAll('.animate-in, .kinetic-num').forEach(el => observer.observe(el));
+
+        // Automatically route external links to a new tab
+        document.querySelectorAll('a').forEach(link => {
+            const href = link.getAttribute('href');
+            // If it's a web link (http) but NOT an internal jump link (#)
+            if (href && (href.startsWith('http') || href.startsWith('//'))) {
+                link.setAttribute('target', '_blank');
+                link.setAttribute('rel', 'noopener noreferrer');
+            }
+        });
         
     } catch (error) {
         console.error("Error initializing dynamic content:", error);
