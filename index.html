@@ -209,7 +209,14 @@
  .footer { text-align: center; padding: 36px 24px 32px; color: var(--mid-gray); font-size: 13px; font-style: italic; line-height: 1.6; }
  .footer strong { color: var(--navy); font-style: normal; }
 
- @media (max-width: 900px) { .demo-grid, .demo-grid-2 { grid-template-columns: 1fr; } .outcome-grid { grid-template-columns: 1fr 1fr; } .hero-number { font-size: 64px; } }
+ @media (max-width: 900px) { 
+    /* Maintain vertical stacking only between 900px and 751px (before carousel kicks in) */
+    @media (min-width: 751px) {
+        .demo-grid, .demo-grid-2 { grid-template-columns: 1fr; }
+    }
+    .outcome-grid { grid-template-columns: 1fr 1fr; } 
+    .hero-number { font-size: 64px; } 
+ }
  @media (max-width: 600px) { .outcome-grid { grid-template-columns: 1fr; } .hero-number { font-size: 52px; } .hero-subtitle { font-size: 18px; } .bar-label { width: 110px; font-size: 11px; } }
 
 /* ─── PRINT STYLES ─── */
